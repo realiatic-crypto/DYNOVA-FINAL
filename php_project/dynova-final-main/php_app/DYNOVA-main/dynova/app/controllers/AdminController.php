@@ -22,7 +22,42 @@ class AdminController {
 
     public function logout(): void {
         unset($_SESSION['admin_id']);
+        dev_lock();
         redirect('admin/login');
+    }
+
+    // -------------------------------------------------- DEVELOPER UNLOCK
+    public function devUnlock(): void {
+        require_admin();
+        $errors = [];
+        $return = trim($_GET['return'] ?? $_POST['return'] ?? '');
+        // Whitelist: return must be an admin/* route.
+        if ($return !== '' && !preg_match('#^admin/[a-z0-9_\-/]*$#i', $return)) {
+            $return = '';
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $pw = (string)($_POST['dev_password'] ?? '');
+            if ($pw === '') {
+                $errors[] = 'Please enter the developer password.';
+            } elseif (dev_unlock_with_password($pw)) {
+                flash_set('success', '🔓 Developer unlock active for ' . DEV_UNLOCK_TTL_MINUTES . ' minutes.');
+                redirect($return ?: 'admin/dashboard');
+            } else {
+                $errors[] = 'Incorrect developer password.';
+            }
+        }
+        view('admin/dev_unlock', compact('errors', 'return'), 'admin');
+    }
+
+    public function devLock(): void {
+        require_admin();
+        dev_lock();
+        flash_set('success', '🔒 Developer lock re-engaged. All write actions are now blocked.');
+        $return = trim($_GET['return'] ?? '');
+        if ($return !== '' && preg_match('#^admin/[a-z0-9_\-/]*$#i', $return)) {
+            redirect($return);
+        }
+        redirect('admin/dashboard');
     }
 
     // -------------------------------------------------- DASHBOARD
@@ -76,6 +111,7 @@ class AdminController {
         $u = User::find($id);
         if (!$u) { flash_set('error','User not found.'); redirect('admin/users'); }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_dev_unlock();
             $action = $_POST['action'] ?? '';
             if ($action === 'block') {
                 db()->prepare('UPDATE users SET is_blocked=1 WHERE id=?')->execute([$id]);
@@ -154,6 +190,7 @@ class AdminController {
     public function tasks(): void {
         require_admin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_dev_unlock();
             $act = $_POST['action'] ?? '';
             if ($act === 'add' || $act === 'edit') {
                 $id     = (int)($_POST['id'] ?? 0);
@@ -202,6 +239,7 @@ class AdminController {
     public function settings(): void {
         require_admin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_dev_unlock();
             $section = $_POST['section'] ?? '';
             if ($section === 'general') {
                 foreach (['referral_l1','referral_l2','referral_l3','min_withdrawal','site_name','site_tagline'] as $k) {
@@ -239,6 +277,7 @@ class AdminController {
     public function ranks(): void {
         require_admin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_dev_unlock();
             $act = $_POST['action'] ?? '';
             if ($act === 'save') {
                 $id = (int)($_POST['id'] ?? 0);
@@ -295,6 +334,7 @@ class AdminController {
     public function bonuses(): void {
         require_admin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_dev_unlock();
             $act = $_POST['action'] ?? '';
             if ($act === 'save') {
                 $data = [
@@ -327,6 +367,7 @@ class AdminController {
     public function packages(): void {
         require_admin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_dev_unlock();
             $act = $_POST['action'] ?? '';
             if ($act === 'save') {
                 TaskPackage::save((int)($_POST['id'] ?? 0) ?: null, $_POST);

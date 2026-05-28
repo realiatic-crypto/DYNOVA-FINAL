@@ -28,6 +28,19 @@ define('BASE_URL', getenv('DYNOVA_BASE_URL') !== false ? getenv('DYNOVA_BASE_URL
 define('SESSION_NAME', 'dynova_sess');
 define('REMEMBER_DAYS', 30);
 
+// ---- Developer Protection (gate for admin write actions) ----
+// All admin "add / edit / delete" operations on packages, ranks, bonuses,
+// tasks, settings, payment methods, and user mutations require this
+// password before they will execute. Only the developer should know it.
+// Override via environment variable DYNOVA_DEV_ACCESS_PASSWORD if you want
+// to avoid storing the live secret in git.
+define('DEV_ACCESS_PASSWORD',
+    getenv('DYNOVA_DEV_ACCESS_PASSWORD') ?: 'DynovaDev@2026'
+);
+// How long a single unlock stays active (in minutes). After this the admin
+// must re-enter the developer password.
+define('DEV_UNLOCK_TTL_MINUTES', 60);
+
 // ---- Business defaults (admin can override in admin_settings) ----
 define('DEFAULT_REFERRAL_L1', 10.0);   // percent
 define('DEFAULT_REFERRAL_L2', 5.0);

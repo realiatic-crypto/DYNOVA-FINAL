@@ -216,6 +216,7 @@ DYNOVA already uses `samesite=Lax` cookies and never assumes HTTP. No code chang
 ## 12. Hardening checklist (recommended)
 
 - [ ] Change the default admin password.
+- [ ] **Change the developer password** in `app/config.php` (the `DEV_ACCESS_PASSWORD` constant) or set the `DYNOVA_DEV_ACCESS_PASSWORD` env var if your hosting supports it. The default ships as `DynovaDev@2026` — pick something only you (the developer) know.
 - [ ] Edit the payment method account numbers in **Admin → Settings**.
 - [ ] Add your support WhatsApp + branding text in **Admin → Settings**.
 - [ ] Configure salary ranks for your real economy in **Admin → Salary Ranks**.
@@ -223,6 +224,47 @@ DYNOVA already uses `samesite=Lax` cookies and never assumes HTTP. No code chang
 - [ ] Turn ON Force-HTTPS (step 8).
 - [ ] Enable Hostinger's nightly **Automatic Backups** feature (hPanel → Files → Backups).
 - [ ] In `app/bootstrap.php`, change `ini_set('display_errors', '1')` to `'0'` once the site is stable.
+
+---
+
+## 13. Developer-protection system (how it works)
+
+The admin panel ships with a **two-layer permission model**:
+
+| Who | Can View | Can Add / Edit / Delete |
+|---|---|---|
+| Admin (after admin login) | ✅ Everything | ❌ Until developer unlock |
+| Developer (knows the dev password) | ✅ Everything | ✅ For 60 minutes per unlock |
+
+**What's gated:** Packages · Salary Ranks · Joining Bonuses · Tasks · Site Settings · User block / unblock / balance adjust.
+**What stays accessible:** Deposit approve/reject and Withdrawal approve/mark-paid (day-to-day ops).
+
+**Workflow:**
+
+1. Admin logs in normally at `/?r=admin/login`.
+2. The admin sees a yellow banner at the top of every admin page: *"Admin is in read-only mode. Adding, editing or deleting data requires a developer unlock."* Every form is dimmed and visually disabled.
+3. Admin clicks **"Unlock to edit"** (banner button) → a developer-password page appears.
+4. Developer (only person who knows the password) enters the password → forms become live for the next **60 minutes**.
+5. The banner turns green showing the remaining time. A **"Lock now"** button revokes the unlock immediately.
+6. Admin logging out or the session expiring also re-locks automatically.
+
+**Changing the developer password:**
+
+Open `app/config.php` and edit the constant:
+
+```php
+define('DEV_ACCESS_PASSWORD',
+    getenv('DYNOVA_DEV_ACCESS_PASSWORD') ?: 'YOUR-NEW-PASSWORD-HERE'
+);
+```
+
+(or — if Hostinger exposes env vars — set `DYNOVA_DEV_ACCESS_PASSWORD` in hPanel → PHP Configuration → Environment Variables and leave the file unchanged).
+
+**Changing the unlock duration:**
+
+```php
+define('DEV_UNLOCK_TTL_MINUTES', 60);   // change to taste
+```
 
 ---
 

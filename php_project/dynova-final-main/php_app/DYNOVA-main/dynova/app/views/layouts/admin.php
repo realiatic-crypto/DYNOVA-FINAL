@@ -44,10 +44,42 @@ $flashes = flash_pull();
       <a href="<?= route_url('admin/logout') ?>" data-testid="admin-nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
     </aside>
     <main class="admin-main">
+      <?php
+        $unlocked = function_exists('dev_unlocked') ? dev_unlocked() : false;
+        $devReturn = $_GET['r'] ?? 'admin/dashboard';
+      ?>
+      <!-- Developer lock status banner -->
+      <div class="dev-lock-bar <?= $unlocked ? 'is-unlocked' : 'is-locked' ?>" data-testid="dev-lock-bar">
+        <?php if ($unlocked):
+          $remaining = function_exists('dev_unlock_remaining') ? dev_unlock_remaining() : 0;
+          $mins = (int)ceil($remaining / 60);
+        ?>
+          <div class="dev-lock-msg">
+            <i class="fa-solid fa-unlock"></i>
+            <span><b>Developer unlock active.</b> Write actions are allowed for the next <?= $mins ?> min<?= $mins===1?'':'s' ?>.</span>
+          </div>
+          <a href="<?= route_url('admin/dev-lock', ['return' => $devReturn]) ?>"
+             class="dev-lock-btn lock" data-testid="dev-lock-btn">
+            <i class="fa-solid fa-lock"></i> Lock now
+          </a>
+        <?php else: ?>
+          <div class="dev-lock-msg">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span><b>Admin is in read-only mode.</b> Adding, editing or deleting data requires a developer unlock.</span>
+          </div>
+          <a href="<?= route_url('admin/dev-unlock', ['return' => $devReturn]) ?>"
+             class="dev-lock-btn unlock" data-testid="dev-unlock-btn">
+            <i class="fa-solid fa-key"></i> Unlock to edit
+          </a>
+        <?php endif; ?>
+      </div>
+
       <?php foreach ($flashes as $f): ?>
         <div class="alert <?= e($f['type']) ?>" data-testid="admin-flash"><?= e($f['msg']) ?></div>
       <?php endforeach; ?>
-      <?= $content ?>
+      <div class="<?= $unlocked ? '' : 'is-dev-locked' ?>">
+        <?= $content ?>
+      </div>
     </main>
   </div>
 </div>

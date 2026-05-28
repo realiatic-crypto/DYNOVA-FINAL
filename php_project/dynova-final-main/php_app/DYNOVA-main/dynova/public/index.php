@@ -63,6 +63,10 @@ try {
             (new AdminController())->login(); break;
         case $route === 'admin/logout':
             (new AdminController())->logout(); break;
+        case $route === 'admin/dev-unlock':
+            (new AdminController())->devUnlock(); break;
+        case $route === 'admin/dev-lock':
+            (new AdminController())->devLock(); break;
         case $route === 'admin/users':
             (new AdminController())->users(); break;
         case $route === 'admin/users/edit':
