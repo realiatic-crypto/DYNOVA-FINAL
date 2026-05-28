@@ -52,12 +52,15 @@ class AdminController {
     public function devLock(): void {
         require_admin();
         dev_lock();
-        flash_set('success', '🔒 Developer lock re-engaged. All write actions are now blocked.');
-        $return = trim($_GET['return'] ?? '');
-        if ($return !== '' && preg_match('#^admin/[a-z0-9_\-/]*$#i', $return)) {
-            redirect($return);
-        }
-        redirect('admin/dashboard');
+        flash_set('success', '🔒 Developer lock re-engaged. Developer area is now hidden.');
+        redirect('admin/developer');
+    }
+
+    // -------------------------------------------------- DEVELOPER HUB
+    public function developer(): void {
+        require_admin();
+        require_dev_unlock();  // password-gates the whole hub
+        view('admin/developer', [], 'admin');
     }
 
     // -------------------------------------------------- DASHBOARD
@@ -111,7 +114,6 @@ class AdminController {
         $u = User::find($id);
         if (!$u) { flash_set('error','User not found.'); redirect('admin/users'); }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_dev_unlock();
             $action = $_POST['action'] ?? '';
             if ($action === 'block') {
                 db()->prepare('UPDATE users SET is_blocked=1 WHERE id=?')->execute([$id]);
@@ -189,8 +191,8 @@ class AdminController {
     // -------------------------------------------------- TASKS
     public function tasks(): void {
         require_admin();
+        require_dev_unlock();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_dev_unlock();
             $act = $_POST['action'] ?? '';
             if ($act === 'add' || $act === 'edit') {
                 $id     = (int)($_POST['id'] ?? 0);
@@ -239,7 +241,6 @@ class AdminController {
     public function settings(): void {
         require_admin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_dev_unlock();
             $section = $_POST['section'] ?? '';
             if ($section === 'general') {
                 foreach (['referral_l1','referral_l2','referral_l3','min_withdrawal','site_name','site_tagline'] as $k) {
@@ -276,8 +277,8 @@ class AdminController {
     // -------------------------------------------------- RANKS
     public function ranks(): void {
         require_admin();
+        require_dev_unlock();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_dev_unlock();
             $act = $_POST['action'] ?? '';
             if ($act === 'save') {
                 $id = (int)($_POST['id'] ?? 0);
@@ -333,8 +334,8 @@ class AdminController {
     // -------------------------------------------------- JOINING BONUSES
     public function bonuses(): void {
         require_admin();
+        require_dev_unlock();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_dev_unlock();
             $act = $_POST['action'] ?? '';
             if ($act === 'save') {
                 $data = [
@@ -366,8 +367,8 @@ class AdminController {
     // -------------------------------------------------- PACKAGES
     public function packages(): void {
         require_admin();
+        require_dev_unlock();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_dev_unlock();
             $act = $_POST['action'] ?? '';
             if ($act === 'save') {
                 TaskPackage::save((int)($_POST['id'] ?? 0) ?: null, $_POST);

@@ -67,6 +67,8 @@ try {
             (new AdminController())->devUnlock(); break;
         case $route === 'admin/dev-lock':
             (new AdminController())->devLock(); break;
+        case $route === 'admin/developer':
+            (new AdminController())->developer(); break;
         case $route === 'admin/users':
             (new AdminController())->users(); break;
         case $route === 'admin/users/edit':
