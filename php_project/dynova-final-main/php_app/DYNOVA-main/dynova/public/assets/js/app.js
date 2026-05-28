@@ -48,35 +48,46 @@
   });
 
   // ---------- Mobile "More" drop-up sheet ----------
-  const moreBtn      = document.getElementById('navMoreBtn');
-  const moreSheet    = document.getElementById('moreSheet');
-  const moreBackdrop = document.getElementById('moreBackdrop');
-  const moreClose    = document.getElementById('moreClose');
-  function openMore(){
-    if(!moreSheet) return;
-    moreSheet.classList.add('is-open');
-    moreSheet.setAttribute('aria-hidden','false');
-    moreBackdrop && moreBackdrop.classList.add('is-open');
-    moreBtn && moreBtn.classList.add('is-open');
-    moreBtn && moreBtn.setAttribute('aria-expanded','true');
-    document.body.style.overflow='hidden';
+  function initMoreSheet(){
+    const moreBtn      = document.getElementById('navMoreBtn');
+    const moreSheet    = document.getElementById('moreSheet');
+    const moreBackdrop = document.getElementById('moreBackdrop');
+    const moreClose    = document.getElementById('moreClose');
+    if(!moreBtn || !moreSheet) return;     // page doesn't use the layout (e.g. admin)
+
+    function openMore(){
+      moreSheet.classList.add('is-open');
+      moreSheet.setAttribute('aria-hidden','false');
+      moreBackdrop && moreBackdrop.classList.add('is-open');
+      moreBtn.classList.add('is-open');
+      moreBtn.setAttribute('aria-expanded','true');
+      document.body.style.overflow='hidden';
+    }
+    function closeMore(){
+      moreSheet.classList.remove('is-open');
+      moreSheet.setAttribute('aria-hidden','true');
+      moreBackdrop && moreBackdrop.classList.remove('is-open');
+      moreBtn.classList.remove('is-open');
+      moreBtn.setAttribute('aria-expanded','false');
+      document.body.style.overflow='';
+    }
+    moreBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if(moreSheet.classList.contains('is-open')) closeMore(); else openMore();
+    });
+    if (moreClose)    moreClose.addEventListener('click', closeMore);
+    if (moreBackdrop) moreBackdrop.addEventListener('click', closeMore);
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeMore();
+    });
   }
-  function closeMore(){
-    if(!moreSheet) return;
-    moreSheet.classList.remove('is-open');
-    moreSheet.setAttribute('aria-hidden','true');
-    moreBackdrop && moreBackdrop.classList.remove('is-open');
-    moreBtn && moreBtn.classList.remove('is-open');
-    moreBtn && moreBtn.setAttribute('aria-expanded','false');
-    document.body.style.overflow='';
+  // Run now if DOM is ready, otherwise wait for it.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMoreSheet);
+  } else {
+    initMoreSheet();
   }
-  moreBtn && moreBtn.addEventListener('click', (e)=>{
-    e.preventDefault();
-    if(moreSheet.classList.contains('is-open')) closeMore(); else openMore();
-  });
-  moreClose && moreClose.addEventListener('click', closeMore);
-  moreBackdrop && moreBackdrop.addEventListener('click', closeMore);
-  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMore(); });
 
   // ---------- Copy button for any [data-copy="#selector"] target ----------
   document.querySelectorAll('[data-copy]').forEach(btn=>{

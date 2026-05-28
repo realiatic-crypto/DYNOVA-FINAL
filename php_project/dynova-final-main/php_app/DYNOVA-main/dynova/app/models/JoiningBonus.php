@@ -79,8 +79,13 @@ class JoiningBonus {
         }
         if ($ref > 0 && !empty($u['referred_by'])) {
             $rid = (int)$u['referred_by'];
-            User::addBalance($rid, $ref, 'referral_earnings');
-            Transaction::log($rid, 'referral', $ref, 'Joining bonus for invitee #' . $uid);
+            // Gate: referrer must also have an active package to receive the
+            // joining bonus. Otherwise we still flag the invitee so the bonus
+            // doesn't fire later when the referrer eventually buys one.
+            if (TaskPackage::activeForUser($rid)) {
+                User::addBalance($rid, $ref, 'referral_earnings');
+                Transaction::log($rid, 'referral', $ref, 'Joining bonus for invitee #' . $uid);
+            }
         }
         db()->prepare('UPDATE users SET joining_bonus_received=1 WHERE id=?')->execute([$uid]);
     }

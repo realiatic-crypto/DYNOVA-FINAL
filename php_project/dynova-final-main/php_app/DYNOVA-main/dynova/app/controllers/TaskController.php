@@ -3,6 +3,15 @@ class TaskController {
     public function index(): void {
         $u = require_user();
         $uid = (int)$u['id'];
+
+        // GATE: a user must have an active package to earn from tasks. If they
+        // don't, bounce them to the packages page with a clear message.
+        $active = TaskPackage::activeForUser($uid);
+        if (!$active) {
+            flash_set('error', 'Activate a package to start earning from tasks.');
+            redirect('packages');
+        }
+
         $limit = TaskPackage::dailyLimitFor($uid);
         $done  = Task::completedTodayCount($uid);
         $remaining = max(0, $limit - $done);
@@ -23,6 +32,13 @@ class TaskController {
     public function submit(): void {
         $u = require_user();
         $uid = (int)$u['id'];
+
+        // GATE: no active package → can't submit tasks.
+        if (!TaskPackage::activeForUser($uid)) {
+            flash_set('error', 'Activate a package first to start earning.');
+            redirect('packages');
+        }
+
         $taskId = (int)($_POST['task_id'] ?? 0);
         $rating = max(1, min(5, (int)($_POST['rating'] ?? 0)));
         if (!$taskId || !$rating) {
@@ -53,7 +69,8 @@ class TaskController {
         User::addBalance($uid, $reward, 'task_earnings');
         Transaction::log($uid, 'task', $reward, $task['title']);
 
-        // Multi-level referral bonuses
+        // Multi-level referral bonuses — only credit ancestors who themselves
+        // have an active package. No package = no team earnings.
         $percents = [
             1 => (float)setting('referral_l1', DEFAULT_REFERRAL_L1),
             2 => (float)setting('referral_l2', DEFAULT_REFERRAL_L2),
@@ -63,6 +80,8 @@ class TaskController {
         foreach ($chain as $i => $ancestorId) {
             $level = $i + 1;
             if (!$ancestorId) continue;
+            // Gate: ancestor must have an active package to earn referral commissions.
+            if (!TaskPackage::activeForUser((int)$ancestorId)) continue;
             $bonus = round($reward * $percents[$level] / 100, 2);
             if ($bonus <= 0) continue;
             User::addBalance((int)$ancestorId, $bonus, 'referral_earnings');

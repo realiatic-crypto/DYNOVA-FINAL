@@ -267,8 +267,9 @@ INSERT INTO admin_settings (setting_key, setting_value) VALUES
 
 -- Default payment methods (edit account numbers in admin → Settings)
 INSERT INTO payment_methods (name, account_title, account_number, instructions, is_active) VALUES
-  ('JazzCash', 'Dynova Network', '03001234567', 'Send the exact amount and copy the Transaction ID (TID) from the SMS.', 1),
-  ('EasyPesa', 'Dynova Network', '03451234567', 'Send the exact amount and paste the EasyPesa TID below.', 1);
+  ('JazzCash',      'Dynova Network', '03001234567',                 'Send the exact amount and copy the Transaction ID (TID) from the SMS.', 1),
+  ('EasyPesa',      'Dynova Network', '03451234567',                 'Send the exact amount and paste the EasyPesa TID below.', 1),
+  ('Bank Transfer', 'Dynova Network', 'PK00MEZN0000000000000000',    'Send the exact amount via IBFT (Raast / online banking) and paste the bank reference number below. Use the IBAN exactly as shown.', 1);
 
 -- Sample tasks
 INSERT INTO tasks (title, video_url, description, reward, is_active) VALUES

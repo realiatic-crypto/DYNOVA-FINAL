@@ -43,6 +43,8 @@ class Salary {
         $count = 0;
         foreach ($users as $row) {
             $uid = (int)$row['id'];
+            // Gate: only users with an active package earn the monthly salary.
+            if (!TaskPackage::activeForUser($uid)) continue;
             $rank = self::rankFor($uid);
             if (!$rank || (float)$rank['monthly_salary'] <= 0) continue;
             try {

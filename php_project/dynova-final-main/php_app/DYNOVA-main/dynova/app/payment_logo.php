@@ -11,6 +11,14 @@ function payment_logo_asset(string $name): ?string {
     return null;
 }
 
+/** Returns true if the given method name should render as a bank-card style logo. */
+function payment_is_bank(string $name): bool {
+    $n = strtolower(trim($name));
+    return strpos($n, 'bank') !== false
+        || strpos($n, 'iban') !== false
+        || strpos($n, 'transfer') !== false;
+}
+
 /**
  * Render a small payment-method logo block — uses the bundled PNG when
  * we recognise the brand, otherwise falls back to a tinted letter pill.
@@ -25,6 +33,11 @@ function payment_logo_html(string $name, string $variant = 'md'): string {
         return '<div class="pay-brand" data-variant="' . e($variant) . '"' .
                ' style="width:' . $px . 'px;height:' . $px . 'px">' .
                '<img src="' . e($img) . '" alt="' . e($name) . '"></div>';
+    }
+    // Bank-style logo (no PNG bundled, use a credit-card / bank icon pill)
+    if (payment_is_bank($name)) {
+        return '<div class="pm-logo pm-logo-bank" style="width:' . $px . 'px;height:' . $px . 'px;font-size:' . round($px * .40) . 'px">' .
+               '<i class="fa-solid fa-building-columns"></i></div>';
     }
     $letter = strtoupper(substr($name, 0, 1));
     return '<div class="pm-logo" style="width:' . $px . 'px;height:' . $px . 'px;font-size:' . round($px * .42) . 'px">' .

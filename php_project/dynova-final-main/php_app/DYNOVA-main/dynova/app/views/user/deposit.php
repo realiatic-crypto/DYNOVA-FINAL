@@ -1,5 +1,5 @@
 <div class="topbar">
-  <div class="greet"><b>Deposit Funds</b><div class="small muted">JazzCash / EasyPesa · Step <?= (int)$step ?> of 3</div></div>
+  <div class="greet"><b>Deposit Funds</b><div class="small muted">JazzCash · EasyPaisa · Bank · Step <?= (int)$step ?> of 3</div></div>
   <a href="<?= route_url('wallet') ?>" class="bell"><i class="fa-solid fa-arrow-left"></i></a>
 </div>
 

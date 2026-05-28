@@ -136,6 +136,6 @@ $initial = $src !== '' ? strtoupper(mb_substr($src, 0, 1, 'UTF-8')) : '·';
 </div>
 
 <div class="copy-toast" id="copyToast">Copied to clipboard</div>
-<script src="<?= asset('js/app.js') ?>"></script>
+<script src="<?= asset('js/app.js') ?>" defer></script>
 </body>
 </html>

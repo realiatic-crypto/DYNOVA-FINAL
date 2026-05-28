@@ -8,6 +8,36 @@
   </a>
 </div>
 
+<?php
+// CTA banner for users who haven't activated any package yet — they can't
+// earn from tasks, team, or salary until they do.
+$activePkg = TaskPackage::activeForUser((int)$u['id']);
+?>
+<?php if (!$activePkg): ?>
+  <div class="card stagger pkg-cta-card" data-testid="dash-no-pkg-cta"
+       style="background:linear-gradient(135deg, rgba(255,181,71,.10), rgba(141,91,255,.12));
+              border-color:rgba(255,181,71,.30);padding:18px 20px;margin-bottom:14px">
+    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;justify-content:space-between">
+      <div style="display:flex;align-items:flex-start;gap:14px;min-width:0;flex:1">
+        <div style="width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
+                    background:rgba(255,181,71,.18);color:#ffb547;font-size:18px;flex-shrink:0">
+          <i class="fa-solid fa-rocket"></i>
+        </div>
+        <div style="min-width:0">
+          <div style="font-weight:700;font-size:15px;margin-bottom:2px">Activate a package to start earning</div>
+          <div class="small muted" style="line-height:1.55">
+            Tasks, team commissions, joining bonuses and monthly salary all unlock the moment you activate any package.
+          </div>
+        </div>
+      </div>
+      <a href="<?= route_url('packages') ?>" class="btn inline" data-testid="dash-pkg-cta-btn"
+         style="flex-shrink:0;align-self:center">
+        <i class="fa-solid fa-box-open"></i> Choose a Plan
+      </a>
+    </div>
+  </div>
+<?php endif; ?>
+
 <div class="card balance-card stagger" data-testid="balance-card">
   <div class="balance-label">Total Balance</div>
   <div class="balance-amount" data-testid="balance-amount"><?= money($u['balance']) ?></div>
