@@ -20,6 +20,19 @@ class TaskPackage {
         // so packages effectively never expire (admin can still pass one in if needed).
         $validity = (int)($d['validity_days'] ?? 0);
         if ($validity <= 0) $validity = 36500; // ~100 years
+
+        // Normalise the withdrawal-ladder CSV: keep only positive numbers,
+        // preserve order. Empty / invalid → use the global default.
+        $ladderRaw = $d['min_withdrawal_ladder'] ?? '1500,7000,15000,35000,100000,200000';
+        $ladder = [];
+        foreach (preg_split('/[\s,]+/', (string)$ladderRaw) as $v) {
+            $v = trim($v);
+            if ($v === '') continue;
+            $n = (float)$v;
+            if ($n > 0) $ladder[] = (string)(int)round($n);
+        }
+        $ladderCsv = $ladder ? implode(',', $ladder) : '1500,7000,15000,35000,100000,200000';
+
         $cols = [
             $d['name'], $d['tier'] ?: 'standard', $d['emoji'] ?? '',
             (float)($d['price'] ?? 0), (int)($d['daily_tasks'] ?? 1),
@@ -28,11 +41,13 @@ class TaskPackage {
             (int)($d['is_featured'] ?? 0),
             (int)($d['is_active'] ?? 1),
             (int)($d['sort_order'] ?? 0),
+            $ladderCsv,
         ];
         if ($id) {
             db()->prepare(
                 'UPDATE task_packages SET name=?, tier=?, emoji=?, price=?, daily_tasks=?,
-                   daily_earning=?, validity_days=?, is_featured=?, is_active=?, sort_order=?
+                   daily_earning=?, validity_days=?, is_featured=?, is_active=?, sort_order=?,
+                   min_withdrawal_ladder=?
                  WHERE id=?'
             )->execute([...$cols, $id]);
             return $id;
@@ -40,13 +55,59 @@ class TaskPackage {
         db()->prepare(
             'INSERT INTO task_packages
              (name, tier, emoji, price, daily_tasks, daily_earning, validity_days,
-              is_featured, is_active, sort_order)
-             VALUES (?,?,?,?,?,?,?,?,?,?)'
+              is_featured, is_active, sort_order, min_withdrawal_ladder)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?)'
         )->execute($cols);
         return (int) db()->lastInsertId();
     }
     public static function delete(int $id): void {
         db()->prepare('DELETE FROM task_packages WHERE id=?')->execute([$id]);
+    }
+
+    /** Parse a CSV ladder string into an ordered array of positive integers. */
+    public static function parseLadder(string $csv): array {
+        $out = [];
+        foreach (preg_split('/[\s,]+/', $csv) as $v) {
+            $v = trim($v);
+            if ($v === '') continue;
+            $n = (int)round((float)$v);
+            if ($n > 0) $out[] = $n;
+        }
+        return $out;
+    }
+
+    /** Default ladder when a user has no active package. */
+    public static function defaultLadder(): array {
+        return [1500, 7000, 15000, 35000, 100000, 200000];
+    }
+
+    /**
+     * Compute the next minimum withdrawal for a user, based on:
+     *   - the ladder stored on the user's active package (or system default)
+     *   - how many withdrawal requests they have made so far
+     *     (any status except 'rejected' counts as a step on the ladder).
+     * Returns ['min' => float, 'ladder' => int[], 'step' => int (1-based), 'count' => int]
+     */
+    public static function withdrawalLadderFor(int $uid): array {
+        $active = self::activeForUser($uid);
+        $ladder = $active && !empty($active['min_withdrawal_ladder'])
+            ? self::parseLadder($active['min_withdrawal_ladder'])
+            : self::defaultLadder();
+        if (!$ladder) $ladder = self::defaultLadder();
+
+        $s = db()->prepare(
+            'SELECT COUNT(*) FROM withdrawals WHERE user_id=? AND status <> "rejected"'
+        );
+        $s->execute([$uid]);
+        $count = (int)$s->fetchColumn();
+
+        $idx = min($count, count($ladder) - 1);
+        return [
+            'min'    => (float)$ladder[$idx],
+            'ladder' => $ladder,
+            'step'   => $idx + 1,
+            'count'  => $count,
+        ];
     }
 
     /** Get the currently-active package row for a user (or null). */

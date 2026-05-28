@@ -120,14 +120,23 @@ class WalletController {
     public function withdraw(): void {
         $u = require_user();
         $methods = PaymentMethod::active();
-        $minAmount = (float)setting('min_withdrawal', DEFAULT_MIN_WITHDRAWAL);
+
+        // New: per-user withdrawal-ladder. The minimum grows with each successful
+        // (or pending/approved) withdrawal: step 1 = ladder[0], step 2 = ladder[1] …
+        // The ladder comes from the user's currently active package (admin-defined);
+        // users with no active package fall back to the system default.
+        $ladderInfo = TaskPackage::withdrawalLadderFor((int)$u['id']);
+        $minAmount  = $ladderInfo['min'];
+
         $errors = [];
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $amount = (float)($_POST['amount'] ?? 0);
             $method = trim($_POST['method'] ?? '');
             $accNum = trim($_POST['account_number'] ?? '');
             $accTit = trim($_POST['account_title'] ?? '');
-            if ($amount < $minAmount) $errors[] = "Minimum withdrawal is " . money($minAmount) . ".";
+            if ($amount < $minAmount) {
+                $errors[] = "Minimum for withdrawal #{$ladderInfo['step']} is " . money($minAmount) . ".";
+            }
             if ($amount > (float)$u['balance']) $errors[] = "Insufficient balance.";
             if (!$method) $errors[] = 'Please select a payment method.';
             if (!$accNum || !$accTit) $errors[] = 'Account details are required.';
@@ -147,6 +156,6 @@ class WalletController {
             }
         }
         $history = Withdrawal::forUser((int)$u['id']);
-        view('user/withdraw', compact('u','methods','errors','history','minAmount'), 'app');
+        view('user/withdraw', compact('u','methods','errors','history','minAmount','ladderInfo'), 'app');
     }
 }

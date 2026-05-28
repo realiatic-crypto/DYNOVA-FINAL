@@ -47,6 +47,20 @@
                value="<?= e($editing['sort_order'] ?? '0') ?>" data-testid="pkg-sort"></div>
     </div>
 
+    <div class="form-group" style="margin-top:6px">
+      <label>
+        Withdrawal minimum ladder (PKR, comma-separated)
+        <span class="small muted" style="text-transform:none;letter-spacing:.2px;font-weight:400">
+          — sequence of minimum amounts. 1st value = minimum for the user's 1st withdrawal,
+          2nd value = minimum for the 2nd withdrawal, and so on. The last value is reused for every withdrawal beyond the list.
+        </span>
+      </label>
+      <input class="input" type="text" name="min_withdrawal_ladder"
+             value="<?= e($editing['min_withdrawal_ladder'] ?? '1500,7000,15000,35000,100000,200000') ?>"
+             placeholder="1500,7000,15000,35000,100000,200000"
+             data-testid="pkg-withdraw-ladder">
+    </div>
+
     <div class="flex" style="gap:18px;margin:6px 0 14px">
       <label class="small muted" style="display:flex;align-items:center;gap:8px">
         <input type="checkbox" name="is_active" value="1"
