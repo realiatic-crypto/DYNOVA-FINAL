@@ -22,18 +22,13 @@
     <i class="fa-solid fa-chevron-right chev"></i>
   </a>
   <a href="<?= route_url('referrals') ?>" class="menu-row" data-testid="menu-referral">
-    <div class="mi"><i class="fa-solid fa-link"></i></div>
-    <div><b>Referral Link</b><small><?= e($u['referral_code']) ?> · L1 referrals: <?= (int)$refCount1 ?></small></div>
+    <div class="mi"><i class="fa-solid fa-users"></i></div>
+    <div><b>Referral Teams</b><small><?= e($u['referral_code']) ?> · L1 referrals: <?= (int)$refCount1 ?></small></div>
     <i class="fa-solid fa-chevron-right chev"></i>
   </a>
   <a href="<?= route_url('wallet') ?>" class="menu-row" data-testid="menu-wallet">
     <div class="mi"><i class="fa-solid fa-wallet"></i></div>
     <div><b>Wallet</b><small>Balance: <?= money($u['balance']) ?> · Team business: <?= money($business) ?></small></div>
-    <i class="fa-solid fa-chevron-right chev"></i>
-  </a>
-  <a href="https://wa.me/<?= e(preg_replace('/\D+/','',$u['whatsapp'])) ?>" class="menu-row" target="_blank" data-testid="menu-support">
-    <div class="mi"><i class="fa-solid fa-headset"></i></div>
-    <div><b>Support</b><small>Contact our support team</small></div>
     <i class="fa-solid fa-chevron-right chev"></i>
   </a>
   <a href="<?= route_url('auth/logout') ?>" class="menu-row" data-testid="menu-logout">
