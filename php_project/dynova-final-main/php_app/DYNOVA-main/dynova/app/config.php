@@ -19,9 +19,10 @@ define('APP_NAME', 'DYNOVA NETWORK');
 define('APP_CURRENCY', 'PKR');
 define('APP_CURRENCY_SYMBOL', 'Rs');
 // BASE_URL: the URL prefix where the app is mounted.
-// On Emergent preview the app is mounted under "/api" because only /api paths
-// are routed to the backend service. On cPanel/localhost leave it empty ("").
-define('BASE_URL', getenv('DYNOVA_BASE_URL') !== false ? getenv('DYNOVA_BASE_URL') : '/api');
+// • Hostinger / cPanel (production)  → leave default "" (this file).
+// • Emergent preview                  → supervisor sets DYNOVA_BASE_URL=/api
+//   which is picked up by getenv() below.
+define('BASE_URL', getenv('DYNOVA_BASE_URL') !== false ? getenv('DYNOVA_BASE_URL') : '');
 
 // ---- Security ----
 define('SESSION_NAME', 'dynova_sess');
