@@ -21,6 +21,13 @@ class TaskPackage {
         $validity = (int)($d['validity_days'] ?? 0);
         if ($validity <= 0) $validity = 36500; // ~100 years
 
+        // New economy: admin enters Daily Tasks + Earning-per-task. Daily / Weekly /
+        // Monthly are auto-computed and stored on the row so existing queries
+        // (e.g. /packages page, monthly column) keep working without changes.
+        $dailyTasks   = max(1, (int)($d['daily_tasks'] ?? 1));
+        $perTask      = (float)($d['earning_per_task'] ?? 0);
+        $dailyEarning = round($dailyTasks * $perTask, 2);
+
         // Normalise the withdrawal-ladder CSV: keep only positive numbers,
         // preserve order. Empty / invalid → use the global default.
         $ladderRaw = $d['min_withdrawal_ladder'] ?? '1500,7000,15000,35000,100000,200000';
@@ -35,8 +42,7 @@ class TaskPackage {
 
         $cols = [
             $d['name'], $d['tier'] ?: 'standard', $d['emoji'] ?? '',
-            (float)($d['price'] ?? 0), (int)($d['daily_tasks'] ?? 1),
-            (float)($d['daily_earning'] ?? 0),
+            (float)($d['price'] ?? 0), $dailyTasks, $perTask, $dailyEarning,
             $validity,
             (int)($d['is_featured'] ?? 0),
             (int)($d['is_active'] ?? 1),
@@ -46,20 +52,33 @@ class TaskPackage {
         if ($id) {
             db()->prepare(
                 'UPDATE task_packages SET name=?, tier=?, emoji=?, price=?, daily_tasks=?,
-                   daily_earning=?, validity_days=?, is_featured=?, is_active=?, sort_order=?,
-                   min_withdrawal_ladder=?
+                   earning_per_task=?, daily_earning=?, validity_days=?,
+                   is_featured=?, is_active=?, sort_order=?, min_withdrawal_ladder=?
                  WHERE id=?'
             )->execute([...$cols, $id]);
             return $id;
         }
         db()->prepare(
             'INSERT INTO task_packages
-             (name, tier, emoji, price, daily_tasks, daily_earning, validity_days,
-              is_featured, is_active, sort_order, min_withdrawal_ladder)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?)'
+             (name, tier, emoji, price, daily_tasks, earning_per_task, daily_earning,
+              validity_days, is_featured, is_active, sort_order, min_withdrawal_ladder)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'
         )->execute($cols);
         return (int) db()->lastInsertId();
     }
+    /**
+     * Per-task reward for a user. Driven by their currently active package:
+     * `earning_per_task`. Users without a package fall back to the task's own
+     * reward field so the platform still works for trial / no-package users.
+     */
+    public static function rewardFor(int $uid, array $task): float {
+        $active = self::activeForUser($uid);
+        if ($active && (float)$active['earning_per_task'] > 0) {
+            return (float)$active['earning_per_task'];
+        }
+        return (float)($task['reward'] ?? 0);
+    }
+
     /**
      * Return the per-day task limit for a user, taken from their currently
      * active package. Falls back to the system default for unsubscribed users.

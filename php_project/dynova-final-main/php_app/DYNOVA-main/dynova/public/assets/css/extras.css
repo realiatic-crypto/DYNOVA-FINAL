@@ -459,3 +459,16 @@ select.input option:hover,
   opacity:1 !important; cursor:pointer !important;
 }
 .is-dev-locked [data-testid="dev-unlock-form"] input[type="password"]{cursor:text !important}
+
+/* ============ Admin package live earning preview ============ */
+.pkg-calc-tile{
+  background:linear-gradient(135deg, rgba(62,182,255,.08), rgba(141,91,255,.10));
+  border:1px solid rgba(141,91,255,.22);
+  border-radius:14px; padding:12px 14px;
+}
+.pkg-calc-k{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--txt-mute,#9aa3b8)}
+.pkg-calc-v{font-size:18px;font-weight:800;margin-top:4px;color:var(--txt,#fff)}
+@media (max-width:560px){
+  .pkg-calc-preview{grid-template-columns:1fr 1fr 1fr !important}
+  .pkg-calc-v{font-size:15px}
+}

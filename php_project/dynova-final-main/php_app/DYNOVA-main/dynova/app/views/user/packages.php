@@ -53,18 +53,33 @@ function pkg_money($amount) {
       <span class="per">one-time</span>
     </div>
 
+    <?php
+      $dailyTasks = (int)$p['daily_tasks'];
+      $perTask    = (float)($p['earning_per_task'] ?? 0);
+      $dailyAmt   = $dailyTasks * $perTask;
+      $weeklyAmt  = $dailyAmt * 7;
+      $monthlyAmt = $dailyAmt * 30;
+    ?>
     <ul class="pkg-stats">
       <li>
         <span class="i"><i class="fa-solid fa-star"></i></span>
-        <span><b><?= (int)$p['daily_tasks'] ?></b><small>Daily tasks</small></span>
+        <span><b><?= $dailyTasks ?></b><small>Daily tasks</small></span>
+      </li>
+      <li>
+        <span class="i grad"><i class="fa-solid fa-bullseye"></i></span>
+        <span><b><?= pkg_money($perTask) ?></b><small>Per task</small></span>
       </li>
       <li>
         <span class="i grad"><i class="fa-solid fa-coins"></i></span>
-        <span><b><?= pkg_money($p['daily_earning']) ?></b><small>Daily earning</small></span>
+        <span><b><?= pkg_money($dailyAmt) ?></b><small>Daily earning</small></span>
+      </li>
+      <li>
+        <span class="i grad2"><i class="fa-solid fa-calendar-week"></i></span>
+        <span><b><?= pkg_money($weeklyAmt) ?></b><small>Weekly earning</small></span>
       </li>
       <li>
         <span class="i grad2"><i class="fa-solid fa-arrow-trend-up"></i></span>
-        <span><b><?= pkg_money((float)$p['daily_earning'] * 30) ?></b><small>Monthly earning</small></span>
+        <span><b><?= pkg_money($monthlyAmt) ?></b><small>Monthly earning</small></span>
       </li>
     </ul>
 

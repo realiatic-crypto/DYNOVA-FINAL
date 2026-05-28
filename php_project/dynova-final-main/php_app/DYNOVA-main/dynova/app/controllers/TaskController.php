@@ -48,7 +48,7 @@ class TaskController {
             redirect('tasks');
         }
 
-        $reward = (float)$task['reward'];
+        $reward = TaskPackage::rewardFor($uid, $task);
         $compId = Task::recordCompletion($uid, $taskId, $rating, $reward);
         User::addBalance($uid, $reward, 'task_earnings');
         Transaction::log($uid, 'task', $reward, $task['title']);

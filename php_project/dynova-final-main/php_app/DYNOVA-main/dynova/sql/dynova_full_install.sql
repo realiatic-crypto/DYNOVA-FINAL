@@ -11,7 +11,8 @@
 --    5.  Default admin: admin@dynova.com / password   (change immediately).
 -- =====================================================================
 
-SET NAMES utf8mb4;
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+SET CHARACTER SET utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS transactions;
@@ -113,6 +114,7 @@ CREATE TABLE task_packages (
   emoji VARCHAR(10) NOT NULL DEFAULT '',
   price DECIMAL(12,2) NOT NULL DEFAULT 0,
   daily_tasks INT UNSIGNED NOT NULL DEFAULT 5,
+  earning_per_task DECIMAL(10,2) NOT NULL DEFAULT 0,
   daily_earning DECIMAL(10,2) NOT NULL DEFAULT 0,
   validity_days INT UNSIGNED NOT NULL DEFAULT 36500,
   is_featured TINYINT(1) NOT NULL DEFAULT 0,
@@ -276,15 +278,17 @@ INSERT INTO tasks (title, video_url, description, reward, is_active) VALUES
   ('Top 10 Tech Gadgets',             'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Rate the presentation.', 60.00, 1),
   ('Smart Home Setup Guide',          'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Rate the tutorial quality.', 80.00, 1);
 
--- Default task packages (with the universal withdrawal ladder)
+-- Default task packages (admin enters daily_tasks + earning_per_task;
+-- daily_earning is derived = daily_tasks × earning_per_task and stored for fast reads)
 INSERT INTO task_packages
-  (name, tier, emoji, price, daily_tasks, daily_earning, validity_days, is_featured, sort_order, min_withdrawal_ladder)
+  (name, tier, emoji, price, daily_tasks, earning_per_task, daily_earning,
+   validity_days, is_featured, sort_order, min_withdrawal_ladder)
 VALUES
-  ('Starter',  'starter',  '', 500,    5,  35,  36500, 0, 1, '1500,7000,15000,35000,100000,200000'),
-  ('Silver',   'silver',   '', 2000,   10, 70,  36500, 0, 2, '1500,7000,15000,35000,100000,200000'),
-  ('Gold',     'gold',     '', 5000,   21, 147, 36500, 1, 3, '1500,7000,15000,35000,100000,200000'),
-  ('Platinum', 'platinum', '', 10000,  35, 280, 36500, 0, 4, '1500,7000,15000,35000,100000,200000'),
-  ('Diamond',  'diamond',  '', 25000,  60, 600, 36500, 0, 5, '1500,7000,15000,35000,100000,200000');
+  ('Starter',  'starter',  '', 500,    5,  7,  35,  36500, 0, 1, '1500,7000,15000,35000,100000,200000'),
+  ('Silver',   'silver',   '', 2000,   10, 7,  70,  36500, 0, 2, '1500,7000,15000,35000,100000,200000'),
+  ('Gold',     'gold',     '', 5000,   21, 7,  147, 36500, 1, 3, '1500,7000,15000,35000,100000,200000'),
+  ('Platinum', 'platinum', '', 10000,  35, 8,  280, 36500, 0, 4, '1500,7000,15000,35000,100000,200000'),
+  ('Diamond',  'diamond',  '', 25000,  60, 10, 600, 36500, 0, 5, '1500,7000,15000,35000,100000,200000');
 
 -- Joining bonuses tied to each package (referrer / invitee, both one-time)
 INSERT INTO joining_bonuses (package_id, referrer_bonus, invitee_bonus, is_active) VALUES

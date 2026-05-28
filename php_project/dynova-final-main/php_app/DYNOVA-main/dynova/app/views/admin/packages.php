@@ -35,16 +35,32 @@
                value="<?= e($editing['price'] ?? '') ?>" placeholder="5000" data-testid="pkg-price"></div>
 
       <div class="form-group"><label>Daily Tasks</label>
-        <input class="input" type="number" name="daily_tasks" min="1" required
+        <input class="input pkg-calc-src" type="number" name="daily_tasks" min="1" required
                value="<?= e($editing['daily_tasks'] ?? '') ?>" placeholder="21" data-testid="pkg-daily-tasks"></div>
 
-      <div class="form-group"><label>Daily Earning (PKR)</label>
-        <input class="input" type="number" name="daily_earning" step="0.01" min="0" required
-               value="<?= e($editing['daily_earning'] ?? '') ?>" placeholder="147" data-testid="pkg-daily-earning"></div>
+      <div class="form-group"><label>Earning per task (PKR)</label>
+        <input class="input pkg-calc-src" type="number" name="earning_per_task" step="0.01" min="0" required
+               value="<?= e($editing['earning_per_task'] ?? '') ?>" placeholder="7" data-testid="pkg-per-task"></div>
 
       <div class="form-group"><label>Sort order</label>
         <input class="input" type="number" name="sort_order"
                value="<?= e($editing['sort_order'] ?? '0') ?>" data-testid="pkg-sort"></div>
+    </div>
+
+    <!-- Live earning preview (Daily / Weekly / Monthly) -->
+    <div class="pkg-calc-preview" data-testid="pkg-calc-preview" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 14px">
+      <div class="pkg-calc-tile">
+        <div class="pkg-calc-k">Daily earning</div>
+        <div class="pkg-calc-v" data-target="daily">Rs 0</div>
+      </div>
+      <div class="pkg-calc-tile">
+        <div class="pkg-calc-k">Weekly earning</div>
+        <div class="pkg-calc-v" data-target="weekly">Rs 0</div>
+      </div>
+      <div class="pkg-calc-tile">
+        <div class="pkg-calc-k">Monthly earning</div>
+        <div class="pkg-calc-v" data-target="monthly">Rs 0</div>
+      </div>
     </div>
 
     <div class="form-group" style="margin-top:6px">
@@ -89,14 +105,18 @@
   <h3 style="margin:0 0 12px">All Packages (<?= count($packages) ?>)</h3>
   <table class="table" data-testid="admin-packages-table">
     <thead><tr>
-      <th>ID</th><th>Name</th><th>Tier</th><th>Price</th><th>Daily tasks</th>
-      <th>Daily</th><th>Weekly</th><th>Monthly</th><th>Status</th><th>Actions</th>
+      <th>ID</th><th>Name</th><th>Tier</th><th>Price</th>
+      <th>Daily tasks</th><th>Per task</th>
+      <th>Daily</th><th>Weekly</th><th>Monthly</th>
+      <th>Status</th><th>Actions</th>
     </tr></thead>
     <tbody>
     <?php if (!$packages): ?>
-      <tr><td colspan="10" class="empty">No packages yet — create one above.</td></tr>
+      <tr><td colspan="11" class="empty">No packages yet — create one above.</td></tr>
     <?php else: foreach ($packages as $p):
-      $daily   = (float)$p['daily_earning'];
+      $tasks   = (int)$p['daily_tasks'];
+      $perTask = (float)($p['earning_per_task'] ?? 0);
+      $daily   = $tasks * $perTask;
       $weekly  = $daily * 7;
       $monthly = $daily * 30; ?>
       <tr>
@@ -106,7 +126,8 @@
         </td>
         <td><span class="badge active"><?= e($p['tier']) ?></span></td>
         <td><?= money($p['price']) ?></td>
-        <td><?= (int)$p['daily_tasks'] ?></td>
+        <td><?= $tasks ?></td>
+        <td><?= money($perTask) ?></td>
         <td><?= money($daily) ?></td>
         <td><?= money($weekly) ?></td>
         <td><?= money($monthly) ?></td>

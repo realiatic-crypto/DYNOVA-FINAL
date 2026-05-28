@@ -100,3 +100,34 @@
     });
   });
 })();
+
+/* ---------- Admin package form: live Daily / Weekly / Monthly preview ---------- */
+(function(){
+  const form = document.querySelector('[data-testid="package-form"]');
+  if(!form) return;
+  const tasksEl = form.querySelector('[data-testid="pkg-daily-tasks"]');
+  const perEl   = form.querySelector('[data-testid="pkg-per-task"]');
+  const out = {
+    daily:   form.querySelector('[data-target="daily"]'),
+    weekly:  form.querySelector('[data-target="weekly"]'),
+    monthly: form.querySelector('[data-target="monthly"]'),
+  };
+  if(!tasksEl || !perEl || !out.daily) return;
+  function fmt(n){
+    if (!isFinite(n) || n < 0) n = 0;
+    return 'Rs ' + Math.round(n * 100) / 100;
+  }
+  function recalc(){
+    const t = parseFloat(tasksEl.value || '0');
+    const p = parseFloat(perEl.value || '0');
+    const d = t * p;
+    out.daily.textContent   = fmt(d);
+    out.weekly.textContent  = fmt(d * 7);
+    out.monthly.textContent = fmt(d * 30);
+  }
+  ['input','change','keyup'].forEach(ev => {
+    tasksEl.addEventListener(ev, recalc);
+    perEl.addEventListener(ev, recalc);
+  });
+  recalc();
+})();
