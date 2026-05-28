@@ -9,40 +9,6 @@
   <div class="balance-amount" data-testid="withdraw-available"><?= money($u['balance']) ?></div>
 </div>
 
-<!-- Withdrawal ladder progress -->
-<div class="card stagger" data-testid="withdraw-ladder-card" style="padding:16px 18px">
-  <div class="flex" style="justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-    <div>
-      <div class="small muted" style="letter-spacing:1.4px;text-transform:uppercase">Withdrawal limits</div>
-      <h3 style="margin:2px 0 0;font-size:17px">Your next minimum: <span style="color:var(--blue,#60a5fa)" data-testid="ladder-next-min"><?= money($minAmount) ?></span></h3>
-    </div>
-    <div style="text-align:right">
-      <div class="small muted">Withdrawals so far</div>
-      <div style="font-size:16px;font-weight:800" data-testid="ladder-count"><?= (int)$count ?></div>
-    </div>
-  </div>
-  <div class="small muted" style="margin-bottom:10px;line-height:1.5">
-    Every user follows the same ladder. The minimum amount grows with each withdrawal request you make.
-  </div>
-  <ol class="wd-ladder" data-testid="wd-ladder-list">
-    <?php foreach ($ladder as $i => $amt):
-      $n = $i + 1;
-      $done    = $n <  $step;          // user already cleared this rung
-      $current = $n === $step;         // this is the rung they are on now
-      $isLast  = $i === count($ladder) - 1;
-    ?>
-      <li class="wd-rung <?= $done ? 'done' : '' ?> <?= $current ? 'current' : '' ?>"
-          data-testid="wd-rung-<?= $n ?>">
-        <span class="wd-rung-num"><?php if ($done): ?><i class="fa-solid fa-check"></i><?php else: ?><?= $n ?><?php endif; ?></span>
-        <span class="wd-rung-label">
-          Withdrawal #<?= $n ?><?= $isLast ? ' & beyond' : '' ?>
-        </span>
-        <span class="wd-rung-amt"><?= money($amt) ?></span>
-      </li>
-    <?php endforeach; ?>
-  </ol>
-</div>
-
 <?php if (!empty($errors)): ?>
   <div class="alert error" data-testid="withdraw-error">
     <ul><?php foreach ($errors as $err): ?><li><?= e($err) ?></li><?php endforeach; ?></ul>
@@ -92,6 +58,40 @@
   </div>
   <button class="btn" type="submit" data-testid="withdraw-submit">Request Withdrawal</button>
 </form>
+
+<!-- Withdrawal ladder progress (shown below the form) -->
+<div class="card stagger" data-testid="withdraw-ladder-card" style="padding:16px 18px">
+  <div class="flex" style="justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+    <div>
+      <div class="small muted" style="letter-spacing:1.4px;text-transform:uppercase">Withdrawal limits</div>
+      <h3 style="margin:2px 0 0;font-size:17px">Your next minimum: <span style="color:var(--blue,#60a5fa)" data-testid="ladder-next-min"><?= money($minAmount) ?></span></h3>
+    </div>
+    <div style="text-align:right">
+      <div class="small muted">Withdrawals so far</div>
+      <div style="font-size:16px;font-weight:800" data-testid="ladder-count"><?= (int)$count ?></div>
+    </div>
+  </div>
+  <div class="small muted" style="margin-bottom:10px;line-height:1.5">
+    Every user follows the same ladder. The minimum amount grows with each withdrawal request you make.
+  </div>
+  <ol class="wd-ladder" data-testid="wd-ladder-list">
+    <?php foreach ($ladder as $i => $amt):
+      $n = $i + 1;
+      $done    = $n <  $step;          // user already cleared this rung
+      $current = $n === $step;         // this is the rung they are on now
+      $isLast  = $i === count($ladder) - 1;
+    ?>
+      <li class="wd-rung <?= $done ? 'done' : '' ?> <?= $current ? 'current' : '' ?>"
+          data-testid="wd-rung-<?= $n ?>">
+        <span class="wd-rung-num"><?php if ($done): ?><i class="fa-solid fa-check"></i><?php else: ?><?= $n ?><?php endif; ?></span>
+        <span class="wd-rung-label">
+          Withdrawal #<?= $n ?><?= $isLast ? ' & beyond' : '' ?>
+        </span>
+        <span class="wd-rung-amt"><?= money($amt) ?></span>
+      </li>
+    <?php endforeach; ?>
+  </ol>
+</div>
 
 <div class="list-title"><h3>Withdrawal History</h3></div>
 <div class="card" data-testid="withdraw-history">
