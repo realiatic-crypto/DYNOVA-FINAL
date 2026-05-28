@@ -12,12 +12,16 @@
         <input class="input" type="number" step="0.01" name="referral_l2" value="<?= e($values['referral_l2']) ?>" data-testid="set-l2"></div>
       <div class="form-group"><label>L3 Referral %</label>
         <input class="input" type="number" step="0.01" name="referral_l3" value="<?= e($values['referral_l3']) ?>" data-testid="set-l3"></div>
-      <div class="form-group"><label>Daily Task Limit</label>
-        <input class="input" type="number" name="daily_task_limit" value="<?= e($values['daily_task_limit']) ?>" data-testid="set-task-limit"></div>
-      <div class="form-group"><label>Min Withdrawal (PKR)</label>
+      <div class="form-group"><label>Min Withdrawal (PKR)
+          <span class="small muted" style="text-transform:none;letter-spacing:.2px;font-weight:400">— absolute floor; per-package ladder still applies on top.</span>
+        </label>
         <input class="input" type="number" name="min_withdrawal" value="<?= e($values['min_withdrawal']) ?>" data-testid="set-min-wd"></div>
       <div class="form-group"><label>Site Tagline</label>
         <input class="input" type="text" name="site_tagline" value="<?= e($values['site_tagline']) ?>"></div>
+    </div>
+    <div class="small muted" style="margin:8px 0 14px;line-height:1.5">
+      <i class="fa-solid fa-circle-info" style="color:var(--blue)"></i>
+      Daily task limits are now configured per package (Packages page). The previous global limit no longer applies.
     </div>
     <button class="btn inline" type="submit" data-testid="save-general">Save Settings</button>
   </form>

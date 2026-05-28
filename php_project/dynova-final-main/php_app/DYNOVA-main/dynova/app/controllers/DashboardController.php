@@ -8,7 +8,7 @@ class DashboardController {
                    + User::countReferrals((int)$u['id'], 3);
         $pendingWd = Withdrawal::pendingSumForUser((int)$u['id']);
         $completedToday = Task::completedTodayCount((int)$u['id']);
-        $dailyLimit = (int)setting('daily_task_limit', DEFAULT_DAILY_TASK_LIMIT);
+        $dailyLimit = TaskPackage::dailyLimitFor((int)$u['id']);
         $recent = Transaction::forUser((int)$u['id'], 6);
 
         // Build a shareable referral link based on the request host.

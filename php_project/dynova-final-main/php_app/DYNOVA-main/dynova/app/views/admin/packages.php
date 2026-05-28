@@ -90,13 +90,15 @@
   <table class="table" data-testid="admin-packages-table">
     <thead><tr>
       <th>ID</th><th>Name</th><th>Tier</th><th>Price</th><th>Daily tasks</th>
-      <th>Daily earning</th><th>Monthly</th><th>Status</th><th>Actions</th>
+      <th>Daily</th><th>Weekly</th><th>Monthly</th><th>Status</th><th>Actions</th>
     </tr></thead>
     <tbody>
     <?php if (!$packages): ?>
-      <tr><td colspan="9" class="empty">No packages yet — create one above.</td></tr>
+      <tr><td colspan="10" class="empty">No packages yet — create one above.</td></tr>
     <?php else: foreach ($packages as $p):
-      $monthly = (float)$p['daily_earning'] * 30; ?>
+      $daily   = (float)$p['daily_earning'];
+      $weekly  = $daily * 7;
+      $monthly = $daily * 30; ?>
       <tr>
         <td>#<?= (int)$p['id'] ?></td>
         <td><b><?= e($p['name']) ?></b>
@@ -105,7 +107,8 @@
         <td><span class="badge active"><?= e($p['tier']) ?></span></td>
         <td><?= money($p['price']) ?></td>
         <td><?= (int)$p['daily_tasks'] ?></td>
-        <td><?= money($p['daily_earning']) ?></td>
+        <td><?= money($daily) ?></td>
+        <td><?= money($weekly) ?></td>
         <td><?= money($monthly) ?></td>
         <td><?php if ($p['is_active']): ?>
               <span class="badge approved">Active</span>

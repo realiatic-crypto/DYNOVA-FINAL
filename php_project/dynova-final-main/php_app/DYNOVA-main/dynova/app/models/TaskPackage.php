@@ -60,6 +60,18 @@ class TaskPackage {
         )->execute($cols);
         return (int) db()->lastInsertId();
     }
+    /**
+     * Return the per-day task limit for a user, taken from their currently
+     * active package. Falls back to the system default for unsubscribed users.
+     */
+    public static function dailyLimitFor(int $uid): int {
+        $active = self::activeForUser($uid);
+        if ($active && (int)$active['daily_tasks'] > 0) {
+            return (int)$active['daily_tasks'];
+        }
+        return (int)setting('daily_task_limit', DEFAULT_DAILY_TASK_LIMIT);
+    }
+
     public static function delete(int $id): void {
         db()->prepare('DELETE FROM task_packages WHERE id=?')->execute([$id]);
     }

@@ -259,7 +259,6 @@ INSERT INTO admin_settings (setting_key, setting_value) VALUES
   ('referral_l1', '10'),
   ('referral_l2', '5'),
   ('referral_l3', '2.5'),
-  ('daily_task_limit', '25'),
   ('min_withdrawal', '1500'),
   ('site_name', 'DYNOVA NETWORK'),
   ('site_tagline', 'Rate. Earn. Refer.');

@@ -378,3 +378,26 @@
 @media (min-width:1024px){
   .nav-more-btn, .more-sheet, .more-backdrop{display:none !important}
 }
+
+/* ============ Dark-theme <select> dropdown options ============ */
+/* By default the OS renders <option> in light theme — illegible on dark UI.
+   Force a dark background + light text on every dropdown the app uses. */
+select.input,
+select.input option,
+select.input optgroup,
+.card select,
+.card select option {
+  background-color: #0b1224 !important;
+  color: #ffffff !important;
+}
+select.input option:checked,
+select.input option:hover,
+.card select option:checked,
+.card select option:hover {
+  background: linear-gradient(120deg,#3eb6ff,#8d5bff) !important;
+  color: #ffffff !important;
+}
+/* Firefox-specific tweak */
+@-moz-document url-prefix() {
+  select.input option { background-color:#0b1224; color:#fff; }
+}

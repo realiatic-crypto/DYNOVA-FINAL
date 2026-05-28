@@ -3,7 +3,7 @@ class TaskController {
     public function index(): void {
         $u = require_user();
         $uid = (int)$u['id'];
-        $limit = (int)setting('daily_task_limit', DEFAULT_DAILY_TASK_LIMIT);
+        $limit = TaskPackage::dailyLimitFor($uid);
         $done  = Task::completedTodayCount($uid);
         $remaining = max(0, $limit - $done);
         $next = ($remaining > 0) ? Task::nextForUser($uid) : null;
@@ -29,8 +29,8 @@ class TaskController {
             flash_set('error', 'Please select a rating before submitting.');
             redirect('tasks');
         }
-        // Daily limit check
-        $limit = (int)setting('daily_task_limit', DEFAULT_DAILY_TASK_LIMIT);
+        // Daily limit check (driven by the user's active package)
+        $limit = TaskPackage::dailyLimitFor($uid);
         if (Task::completedTodayCount($uid) >= $limit) {
             flash_set('error', 'Daily task limit reached.');
             redirect('tasks');

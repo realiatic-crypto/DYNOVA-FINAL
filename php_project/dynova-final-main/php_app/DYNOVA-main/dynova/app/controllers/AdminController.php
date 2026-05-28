@@ -204,7 +204,7 @@ class AdminController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $section = $_POST['section'] ?? '';
             if ($section === 'general') {
-                foreach (['referral_l1','referral_l2','referral_l3','daily_task_limit','min_withdrawal','site_name','site_tagline'] as $k) {
+                foreach (['referral_l1','referral_l2','referral_l3','min_withdrawal','site_name','site_tagline'] as $k) {
                     if (isset($_POST[$k])) setting_set($k, $_POST[$k]);
                 }
                 flash_set('success','Settings updated.');
@@ -228,7 +228,6 @@ class AdminController {
             'referral_l1'      => setting('referral_l1', DEFAULT_REFERRAL_L1),
             'referral_l2'      => setting('referral_l2', DEFAULT_REFERRAL_L2),
             'referral_l3'      => setting('referral_l3', DEFAULT_REFERRAL_L3),
-            'daily_task_limit' => setting('daily_task_limit', DEFAULT_DAILY_TASK_LIMIT),
             'min_withdrawal'   => setting('min_withdrawal', DEFAULT_MIN_WITHDRAWAL),
             'site_name'        => setting('site_name', APP_NAME),
             'site_tagline'     => setting('site_tagline', 'Rate. Earn. Refer.'),
