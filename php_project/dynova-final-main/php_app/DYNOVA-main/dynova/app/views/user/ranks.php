@@ -124,7 +124,7 @@
   <h3 style="margin:0 0 6px;font-size:15px"><i class="fa-solid fa-circle-info" style="color:var(--blue)"></i> How salary ranks work</h3>
   <ul style="margin:6px 0 0;padding-left:20px;color:var(--txt-mute);font-size:13px;line-height:1.7">
     <li>Refer new users and grow your team across <b>Level 1, Level 2 and Level 3</b>.</li>
-    <li>"Business" at each level = the sum of deposits + task earnings of users at that exact level.</li>
+    <li>"Business" at each level = the sum of <b>deposits only</b> from users at that exact level (task earnings are not counted).</li>
     <li>The moment you meet <b>every</b> requirement of a rank, you unlock its monthly salary.</li>
     <li>Salary is paid automatically on the 1st of each month, on top of your task and referral earnings.</li>
   </ul>

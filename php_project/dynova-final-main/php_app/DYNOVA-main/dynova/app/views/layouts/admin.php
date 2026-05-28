@@ -36,6 +36,7 @@ $flashes = flash_pull();
       <a href="<?= route_url('admin/withdrawals') ?>" class="<?= $current==='admin/withdrawals'?'active':'' ?>" data-testid="admin-nav-withdrawals"><i class="fa-solid fa-money-bill-transfer"></i> Withdrawals</a>
       <a href="<?= route_url('admin/tasks') ?>" class="<?= $current==='admin/tasks'?'active':'' ?>" data-testid="admin-nav-tasks"><i class="fa-solid fa-star"></i> Tasks</a>
       <a href="<?= route_url('admin/packages') ?>" class="<?= $current==='admin/packages'?'active':'' ?>" data-testid="admin-nav-packages"><i class="fa-solid fa-box-open"></i> Packages</a>
+      <a href="<?= route_url('admin/bonuses') ?>" class="<?= $current==='admin/bonuses'?'active':'' ?>" data-testid="admin-nav-bonuses"><i class="fa-solid fa-gift"></i> Joining Bonuses</a>
       <a href="<?= route_url('admin/referrals') ?>" class="<?= $current==='admin/referrals'?'active':'' ?>" data-testid="admin-nav-referrals"><i class="fa-solid fa-sitemap"></i> Referrals</a>
       <a href="<?= route_url('admin/ranks') ?>" class="<?= $current==='admin/ranks'?'active':'' ?>" data-testid="admin-nav-ranks"><i class="fa-solid fa-medal"></i> Salary Ranks</a>
       <a href="<?= route_url('admin/transactions') ?>" class="<?= $current==='admin/transactions'?'active':'' ?>" data-testid="admin-nav-tx"><i class="fa-solid fa-list"></i> Transactions</a>

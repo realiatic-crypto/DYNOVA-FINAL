@@ -41,6 +41,8 @@ try {
             (new PackageController())->index(); break;
         case $route === 'ranks':
             (new RankController())->index(); break;
+        case $route === 'bonuses':
+            (new BonusController())->index(); break;
         case $route === 'referrals':
             (new ReferralController())->index(); break;
         case $route === 'wallet':
@@ -81,6 +83,8 @@ try {
             (new AdminController())->transactions(); break;
         case $route === 'admin/packages':
             (new AdminController())->packages(); break;
+        case $route === 'admin/bonuses':
+            (new AdminController())->bonuses(); break;
 
         default:
             http_response_code(404);

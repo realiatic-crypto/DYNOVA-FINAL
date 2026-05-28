@@ -42,6 +42,7 @@ $initial = $src !== '' ? strtoupper(mb_substr($src, 0, 1, 'UTF-8')) : '·';
   <a href="<?= route_url('tasks') ?>" class="nd-link <?= str_starts_with($current,'tasks')?'active':'' ?>" data-testid="dnav-tasks"><i class="fa-solid fa-star"></i> Tasks</a>
   <a href="<?= route_url('packages') ?>" class="nd-link <?= $current==='packages'?'active':'' ?>" data-testid="dnav-packages"><i class="fa-solid fa-box-open"></i> Packages</a>
   <a href="<?= route_url('ranks') ?>" class="nd-link <?= $current==='ranks'?'active':'' ?>" data-testid="dnav-ranks"><i class="fa-solid fa-medal"></i> Salary Ranks</a>
+  <a href="<?= route_url('bonuses') ?>" class="nd-link <?= $current==='bonuses'?'active':'' ?>" data-testid="dnav-bonuses"><i class="fa-solid fa-gift"></i> Joining Bonus</a>
   <a href="<?= route_url('referrals') ?>" class="nd-link <?= $current==='referrals'?'active':'' ?>" data-testid="dnav-referrals"><i class="fa-solid fa-users"></i> Referrals</a>
   <a href="<?= route_url('wallet') ?>" class="nd-link <?= str_starts_with($current,'wallet')?'active':'' ?>" data-testid="dnav-wallet"><i class="fa-solid fa-wallet"></i> Wallet</a>
   <a href="<?= route_url('profile') ?>" class="nd-link <?= str_starts_with($current,'profile')?'active':'' ?>" data-testid="dnav-profile"><i class="fa-solid fa-user"></i> Profile</a>

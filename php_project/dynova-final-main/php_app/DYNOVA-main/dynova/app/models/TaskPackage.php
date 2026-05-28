@@ -96,6 +96,13 @@ class TaskPackage {
                 $expires,
             ]);
             $pdo->commit();
+            // One-time joining bonus (for invitee + referrer) — only fires the very
+            // first time this user activates ANY package.
+            try {
+                JoiningBonus::creditOnFirstActivation($uid, $packageId);
+            } catch (Throwable $e) {
+                // Don't fail the activation if bonus crediting fails.
+            }
             return ['ok' => true, 'expires' => $expires];
         } catch (Throwable $e) {
             $pdo->rollBack();

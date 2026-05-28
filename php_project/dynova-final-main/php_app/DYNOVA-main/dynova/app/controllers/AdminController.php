@@ -292,6 +292,38 @@ class AdminController {
         view('admin/ranks', compact('ranks'), 'admin');
     }
 
+    // -------------------------------------------------- JOINING BONUSES
+    public function bonuses(): void {
+        require_admin();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $act = $_POST['action'] ?? '';
+            if ($act === 'save') {
+                $data = [
+                    'package_id'     => (int)($_POST['package_id'] ?? 0),
+                    'referrer_bonus' => (float)($_POST['referrer_bonus'] ?? 0),
+                    'invitee_bonus'  => (float)($_POST['invitee_bonus'] ?? 0),
+                    'is_active'      => isset($_POST['is_active']) ? 1 : 0,
+                ];
+                if ($data['package_id'] <= 0) {
+                    flash_set('error', 'Please pick a package.');
+                } else {
+                    JoiningBonus::save((int)($_POST['id'] ?? 0) ?: null, $data);
+                    flash_set('success', 'Joining bonus saved.');
+                }
+            } elseif ($act === 'delete') {
+                JoiningBonus::delete((int)$_POST['id']);
+                flash_set('success', 'Joining bonus deleted.');
+            } elseif ($act === 'toggle') {
+                db()->prepare('UPDATE joining_bonuses SET is_active = 1 - is_active WHERE id=?')
+                    ->execute([(int)$_POST['id']]);
+            }
+            redirect('admin/bonuses');
+        }
+        $bonuses  = JoiningBonus::all();
+        $packages = TaskPackage::all();
+        view('admin/bonuses', compact('bonuses', 'packages'), 'admin');
+    }
+
     // -------------------------------------------------- PACKAGES
     public function packages(): void {
         require_admin();
