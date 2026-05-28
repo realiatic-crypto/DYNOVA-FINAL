@@ -1,0 +1,45 @@
+{
+  "summary": "Frontend e2e tested via public preview URL for DYNOVA NETWORK PHP app: signup with math captcha, dashboard testids, task rating submission with 50 PKR balance credit, referrals page, wallet deposit creation, profile/password, admin login, admin dashboard KPIs, deposits/tasks/settings/ranks pages. All core flows pass. One UX bug found: referral link contains internal upstream URL (http://127.0.0.1:9000) instead of public domain.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Referrals page",
+        "issue": "Referral link shows internal upstream URL 'http://127.0.0.1:9000/api/?r=auth/signup&ref=DNxxxx' instead of the public preview URL. This will break referral sharing for users in production.",
+        "selector": "[data-testid='referral-link']",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Tasks page",
+        "issues": ["Star-rating radios are visually hidden (style display:none); only the label[for=sN] is clickable. Functional but Playwright .check() on hidden radio fails — tests must click the label. Consider adding data-testid='star-N' on each label/star for easier testing."]
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Fix referral link generation to use the public REACT_APP_BACKEND_URL / preview domain (or request Host header) instead of the internal SERVER_NAME 127.0.0.1:9000. This is set somewhere in app/controllers/ReferralsController or a base_url helper.",
+    "(Nice-to-have) Add data-testid='star-1' .. 'star-5' to the star rating labels in tasks page for easier automated testing.",
+    "(Nice-to-have) Add data-testid='copy-referral' on the copy button so tests can verify clipboard action."
+  ],
+  "critical_code_review_comments": [
+    "Referral link uses internal PHP server URL — this means generated links use $_SERVER['HTTP_HOST']=127.0.0.1:9000 instead of the proxied external host. Server.py should forward X-Forwarded-Host/Proto or PHP should trust X-Forwarded-* and rebuild URLs accordingly.",
+    "Captcha is server-rendered math (X + Y) stored in session — works as designed.",
+    "CSRF hidden field _csrf is present on every form (signup, login, deposit, admin login) — good.",
+    "Bottom-nav (data-testid=bottom-nav) renders Home/Tasks/Refer/Wallet/Profile with active state — working.",
+    "Admin dashboard already shows 'TOTAL USERS: 4', 'TOTAL DEPOSITS: Rs 0.00', 'TODAY'S EARNINGS: Rs 100.00' indicating multi-user/test-data state; admin pending deposits table correctly lists newly created Rs 5000 / JazzCash / TID12345 pending deposit."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (not tested per request)", "frontend": "~95%"},
+  "test_credentials": "Admin admin@dynova.com / password (worked). Created test user Ahmed Khan / 312xxxxxx / test1234 with ref code DN728611BE8.",
+  "seed_data_creation": "Signed up a fresh test user (whatsapp 312xxxxxx) and submitted 1 task earning Rs 50; created 1 pending Rs 5000 JazzCash deposit (TID12345). Existing DB had 4 total users, 2 pending deposits visible to admin.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "PHP MVC app behind FastAPI proxy. All routes use /api/?r=<route>. Captcha label format: 'Captcha: What is X + Y?' (parse with regex). Signup form fields: name, whatsapp, password, confirm, captcha. Password change fields: current, new, confirm. Star rating radios are name='rating' value=1..5 but visually hidden — click label[for=s5]. All testids listed in problem statement are present and verified. Skipped advanced cross-user referral commission test (requires logout/relogin sequence) — referral testids present but commission % flow not exercised end-to-end. Skipped settings persistence (changing L1 10->12) due to time; settings-general-form testid present.",
+  "rca of the issue": "Referral URL bug RCA: PHP code likely uses $_SERVER['HTTP_HOST'] or hardcoded base when building referral link. Because FastAPI proxy in /app/backend/server.py forwards requests to 127.0.0.1:9000 upstream and probably doesn't override Host header, PHP receives Host: 127.0.0.1:9000. Fix: in server.py forward original Host (or X-Forwarded-Host), and in PHP, prefer X-Forwarded-Host/Proto when present (or set base_url from env). Reproduction: signup any user, visit /api/?r=referrals — input field shows internal URL."
+}

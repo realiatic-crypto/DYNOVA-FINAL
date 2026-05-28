@@ -1,0 +1,78 @@
+{
+  "summary": "Frontend-only e2e test of the new 3-step deposit wizard on PHP+MariaDB DYNOVA NETWORK via FastAPI proxy. Signup → deposit wizard step1→2→3 → submit with screenshot → admin pending list → approve → balance credited. All happy-path checks PASS. Found 1 real UX bug: the Back button on Step 3 is blocked by HTML5 'required' validation on the TID input because the Back button lives inside the same form as the required field.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "WalletController::deposit step 3 view (app/views/user/deposit.php)",
+        "issue": "Clicking 'Back' on Step 3 ([data-testid='deposit-back-3']) does NOT navigate back to Step 2. The Back button is a submit button inside the same <form> that contains the REQUIRED transaction_id input ([data-testid='deposit-tid']). Browser HTML5 validation fires on submit and shows tooltip 'Please fill out this field', blocking the back action. Repro: open wizard, go to step 3 with empty TID, click Back — URL stays at step=3. Step-indicator-2 still has class 'step done' (i.e., $step is still 3).",
+        "selector": "[data-testid='deposit-back-3']",
+        "priority": "HIGH",
+        "fix_hint": "Add formnovalidate attribute to the Back button: <button type=\"submit\" name=\"action\" value=\"back\" class=\"btn ghost\" formnovalidate data-testid=\"deposit-back-3\">. Same applies to deposit-submit only insofar as it should validate — but Back must bypass validation. (Step 2 Back is in its own separate <form> with no required inputs, so it works fine.)"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Step 2 — account number 'Copy' button", "issues": ["pm-account-number text content includes the trailing 'Copy' button label when extracted via textContent — minor: copy button could be moved outside the data-testid='pm-account-number' element so automated tests can read the raw number cleanly. Not a user-visible bug."]}
+    ]
+  },
+  "test_results": {
+    "TEST_step1_indicators_and_amount_method": {
+      "status": "PASS",
+      "evidence": "/api/?r=wallet/deposit shows step-indicator-1 class='step active', 2/3 class='step ' (pending). Filled deposit-amount=2500 and clicked pm-radio-JazzCash. After deposit-next-1 URL became /api/?r=wallet%2Fdeposit&step=2."
+    },
+    "TEST_step2_pay_to_details": {
+      "status": "PASS",
+      "evidence": "step-indicator-1='step done', 2='step active'. pm-account-title='Dynova Network', pm-account-number raw='03001234567' (followed by Copy button), pm-amount-display='Rs 2,500.00', pm-instructions rendered, howto-list contains exactly 5 <li>."
+    },
+    "TEST_step3_TID_and_upload_submit": {
+      "status": "PASS",
+      "evidence": "URL became step=3, step-indicator-3='step active'. Filled deposit-tid='5571122334455', set_input_files(/tmp/payment.png) on hidden deposit-screenshot, clicked deposit-submit. Redirected to /api/?r=wallet with flash 'Deposit request submitted. Pending admin approval.'"
+    },
+    "TEST_back_step2_preserves_state": {
+      "status": "PASS",
+      "evidence": "From step 2, clicking deposit-back-2 returned to step 1 with deposit-amount still '2500' and pm-radio-JazzCash radio still checked (session restored)."
+    },
+    "TEST_back_step3_preserves_state": {
+      "status": "FAIL",
+      "evidence": "From step 3 with empty TID, clicking deposit-back-3 did NOT change step (page still on step=3, indicator-3 still active). HTML5 'Please fill out this field' tooltip appeared on the TID input. See ui_bugs[0]."
+    },
+    "TEST_user_deposit_history_pending_row": {
+      "status": "PASS",
+      "evidence": "On /api/?r=wallet/deposit the [data-testid='deposit-history'] block shows one row: 'JazzCash — Rs 2,500.00  TID: 5571122334455 · May 25, 18:55' with badge='pending'."
+    },
+    "TEST_admin_pending_list_with_proof": {
+      "status": "PASS",
+      "evidence": "admin@dynova.com / password login → /api/?r=admin/deposits. Pending(1) table shows TestDep row Rs 2,500.00 JazzCash TID 5571122334455 with Proof link [data-testid='deposit-ss-1'] href=/api/uploads/deposits/d4_1779735315_6d047e1a.png. page.request.get(...) returned 200 image/png while authenticated."
+    },
+    "TEST_admin_approve": {
+      "status": "PASS",
+      "evidence": "Clicked [data-testid='approve-deposit-1']. Flash 'Deposit approved' (case-insensitive) appeared. Approve button no longer present in pending table (count=0)."
+    },
+    "TEST_user_balance_credited": {
+      "status": "PASS",
+      "evidence": "Logged user back in. /api/?r=dashboard [data-testid='balance-amount'] = 'Rs 2,500.00' (was 'Rs 0.00' before approval). /api/?r=wallet page also displays 'Rs 2,500.00'. Deposit history badge updated to 'approved'."
+    },
+    "TEST_screenshot_url_anonymous_403": {
+      "status": "INFO",
+      "evidence": "Anonymous urllib HEAD of /api/uploads/deposits/<file>.png returns 403, but authenticated browser request returns 200 image/png (68 bytes, valid PNG header). Not a bug — uploaded screenshots are gated and only viewable through admin/user session, which is desired behaviour."
+    }
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Add formnovalidate to the Step-3 Back button so users can return to Step 2 without first filling the required Transaction ID. File: /app/dynova/app/views/user/deposit.php, button [data-testid='deposit-back-3']."
+  ],
+  "critical_code_review_comments": [
+    "deposit.php step-3: Back button shares the same <form> as required TID input → HTML5 validation hijacks the back navigation. Either (a) add formnovalidate to deposit-back-3, or (b) move the Back button into its own separate <form> like step-2 does. Option (a) is the smaller patch.",
+    "deposit.php step-2: pm-account-number testid wraps both the number text AND the 'Copy' button. Putting data-testid on the inner <span> with just the number would let automated tests assert the number value without string-cleaning.",
+    "WalletController::deposit step-3 submit branch: if screenshot save fails after Deposit::create() is reached, no rollback is attempted. Currently $errors short-circuits before create, so this is mostly fine, but consider wrapping the upload+create in a try/catch + transaction for robustness."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "skipped (frontend-only)", "frontend": "8/9 targeted checks passed (Step-3 Back is broken)"},
+  "test_credentials": "Admin: admin@dynova.com / password. Test user created during run: WhatsApp 3004935304 / test1234 (TestDep). Deposit row id=1 (DB freshly seeded — first deposit).",
+  "seed_data_creation": "Created 1 test user (TestDep, WA 3004935304) and submitted+approved 1 deposit of Rs 2500 via JazzCash with screenshot proof. Admin dashboard now shows TOTAL DEPOSITS Rs 2,500.00 and TOTAL USERS 4.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Signup form has 4 required text fields: name (optional), whatsapp, password, confirm, captcha. Forgetting 'confirm' makes the page bounce back to login silently. Captcha is plain integer addition. Admin login is at /api/?r=admin/login and uses input[name='email']. Container PHP/MariaDB freshly seeded so DB starts empty. The 3-step wizard uses PHP $_SESSION['dep_wizard'] keyed via the FastAPI-proxy session cookie — Playwright's default browser context preserves it across page.goto calls automatically.",
+  "rca_of_the_issue": "Step-3 Back navigation bug RCA: In /app/dynova/app/views/user/deposit.php (lines 144–187) the entire Step-3 view is wrapped in a single <form enctype='multipart/form-data'>. Inside it, the Transaction ID input has the HTML attribute `required` (line 156). Both the Submit button (name=action value=submit) and the Back button (name=action value=back, [data-testid='deposit-back-3'], line 180) are type='submit' children of this form. When the user clicks Back with TID empty, the browser performs constraint validation on every submit button without formnovalidate, sees the empty required TID, focuses it and shows the 'Please fill out this field' tooltip, then aborts submission. The POST to the controller never happens, so the controller's `if ($action === 'back' && $step > 1) redirect(...)` branch is never hit. Mitigation: add `formnovalidate` to the Back button — it tells the browser to skip validation for that submit button only, while the Submit button continues to validate normally."
+}

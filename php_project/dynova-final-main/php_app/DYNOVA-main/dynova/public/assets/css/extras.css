@@ -1,0 +1,271 @@
+/* =====================================================================
+   DYNOVA – Extensions: packages, mobile alphabetic header, brand logos
+   Loaded after style.css (via <link>) so values here override defaults.
+   ===================================================================== */
+
+/* ---------- PAGE HEAD (replaces .greet on dashboards) ---------- */
+.topbar .page-head { display: flex; flex-direction: column; }
+.page-title {
+  margin: 0; font-family: 'Outfit', 'Sora', sans-serif;
+  font-size: 22px; font-weight: 800; letter-spacing: -.4px;
+  background: linear-gradient(90deg, #fff, #b9d6ff);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.page-sub { font-size: 12px; color: var(--txt-mute); letter-spacing: .3px; }
+
+/* ---------- MOBILE ALPHABETIC HEADER (< 1024px only) ---------- */
+.mob-header {
+  display: none;
+  position: sticky; top: 0; z-index: 25;
+  align-items: center; justify-content: space-between;
+  padding: 12px 18px;
+  background: rgba(4, 7, 15, .82);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 1023px) {
+  .mob-header { display: flex; }
+  /* push the shell down a bit so it doesn't sit under the sticky header */
+  body.user-panel .shell:not(.admin) { padding-top: 10px; }
+}
+
+.mob-mark {
+  position: relative;
+  display: grid; place-items: center;
+  width: 42px; height: 42px; border-radius: 14px;
+  background: var(--grad-brand);
+  text-decoration: none;
+  box-shadow: 0 10px 24px -8px rgba(62, 182, 255, .55),
+              inset 0 1px 0 rgba(255, 255, 255, .25);
+  overflow: hidden;
+  isolation: isolate;
+  animation: markPulse 4s ease-in-out infinite;
+}
+.mob-mark::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: conic-gradient(from 0deg,
+    rgba(255, 255, 255, 0) 0deg,
+    rgba(255, 255, 255, .25) 60deg,
+    rgba(255, 255, 255, 0) 140deg);
+  animation: markSpin 5s linear infinite;
+}
+.mob-mark-glyph {
+  font-family: 'Outfit', 'Sora', sans-serif;
+  font-weight: 800; font-size: 20px; line-height: 1;
+  color: #fff; letter-spacing: -.5px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+}
+.mob-mark-dot {
+  position: absolute; bottom: 4px; right: 4px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); box-shadow: 0 0 8px var(--green);
+  border: 2px solid #04070f;
+}
+@keyframes markPulse {
+  0%, 100% { box-shadow: 0 10px 24px -8px rgba(62, 182, 255, .55), inset 0 1px 0 rgba(255, 255, 255, .25); }
+  50%      { box-shadow: 0 12px 30px -6px rgba(141, 91, 255, .7),  inset 0 1px 0 rgba(255, 255, 255, .3); }
+}
+@keyframes markSpin { to { transform: rotate(360deg); } }
+
+.mob-brand {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; color: var(--txt);
+}
+.mob-brand img {
+  width: 26px; height: 26px; border-radius: 8px; object-fit: cover;
+  box-shadow: 0 0 10px rgba(62, 182, 255, .35);
+}
+.mob-brand-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800; letter-spacing: 3px; font-size: 13px;
+  background: var(--grad-brand);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.mob-bell {
+  position: relative;
+  width: 42px; height: 42px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--line);
+  color: var(--txt); text-decoration: none;
+}
+.mob-bell .dot {
+  position: absolute; top: 9px; right: 11px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--pink); box-shadow: 0 0 8px var(--pink);
+}
+
+/* ============================================================
+   PAYMENT BRAND LOGO (white pill so coloured PNGs read clearly)
+   ============================================================ */
+.pay-brand {
+  border-radius: 14px;
+  background: #ffffff;
+  display: grid; place-items: center;
+  padding: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, .5);
+}
+.pay-brand img { width: 100%; height: 100%; object-fit: contain; }
+.pay-brand-lg {
+  width: 72px; height: 72px; border-radius: 18px; padding: 10px;
+  margin-bottom: 18px;
+}
+
+/* ============================================================
+   TASK PACKAGES — USER VIEW
+   ============================================================ */
+.packages-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: 1fr;
+  margin-top: 18px;
+}
+@media (min-width: 720px) {
+  .packages-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .packages-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1400px) {
+  .packages-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.pkg-card {
+  position: relative;
+  padding: 22px 20px 20px;
+  border-radius: 22px;
+  background: var(--grad-card), rgba(13, 18, 40, .55);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+  transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.pkg-card::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; opacity: .14;
+  background: var(--pkg-grad, linear-gradient(160deg, #3eb6ff, transparent 70%));
+  pointer-events: none;
+}
+.pkg-card > * { position: relative; z-index: 1; }
+.pkg-card:hover { transform: translateY(-4px); box-shadow: 0 24px 60px -22px rgba(62, 182, 255, .35); }
+
+.pkg-card.starter   { --pkg-grad: linear-gradient(160deg, #3eb6ff, transparent 70%); border-color: rgba(62, 182, 255, .25); }
+.pkg-card.silver    { --pkg-grad: linear-gradient(160deg, #c0c0c0, transparent 70%); border-color: rgba(192, 192, 192, .30); }
+.pkg-card.gold      { --pkg-grad: linear-gradient(160deg, #ffd24a, transparent 70%); border-color: rgba(255, 210, 74, .35); }
+.pkg-card.platinum  { --pkg-grad: linear-gradient(160deg, #b9c6ff, transparent 70%); border-color: rgba(185, 198, 255, .35); }
+.pkg-card.diamond   { --pkg-grad: linear-gradient(160deg, #5bf0ff, transparent 70%); border-color: rgba(91, 240, 255, .35); }
+.pkg-card.featured  { border-color: rgba(255, 210, 74, .55); box-shadow: 0 0 40px -12px rgba(255, 210, 74, .35); }
+
+.pkg-ribbon {
+  position: absolute; top: 14px; right: -36px;
+  background: linear-gradient(135deg, #ffd24a, #ff9d4a);
+  color: #1a1300; font-weight: 800; font-size: 10.5px;
+  letter-spacing: 1px; padding: 5px 44px; transform: rotate(35deg);
+  box-shadow: 0 8px 18px -6px rgba(255, 157, 74, .6);
+}
+
+.pkg-head { display: flex; align-items: center; gap: 12px; }
+.pkg-emoji {
+  width: 50px; height: 50px; border-radius: 14px;
+  display: grid; place-items: center; font-size: 26px;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--line);
+}
+.pkg-name {
+  font-family: 'Outfit', 'Sora', sans-serif;
+  font-size: 20px; font-weight: 800; letter-spacing: -.4px;
+}
+.pkg-tier { font-size: 10px; letter-spacing: 2px; color: var(--txt-mute); font-weight: 600; }
+
+.pkg-price { display: flex; align-items: baseline; gap: 6px; margin: 18px 0 14px; }
+.pkg-price .cur { font-size: 16px; color: var(--txt-mute); font-weight: 600; }
+.pkg-price .amt {
+  font-family: 'Outfit', sans-serif;
+  font-size: 38px; font-weight: 800; line-height: 1; letter-spacing: -1px;
+  background: var(--grad-brand);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.pkg-price .per { font-size: 11px; color: var(--txt-mute); margin-left: 4px; }
+
+.pkg-stats {
+  list-style: none; padding: 0; margin: 0 0 14px;
+  display: grid; grid-template-columns: 1fr; gap: 7px;
+}
+.pkg-stats li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 12px;
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid var(--line);
+  min-width: 0;
+}
+.pkg-stats .i {
+  width: 30px; height: 30px; border-radius: 9px;
+  display: grid; place-items: center; font-size: 12px;
+  background: rgba(62, 182, 255, .12); color: var(--blue); flex-shrink: 0;
+}
+.pkg-stats .i.grad  { background: rgba(61, 220, 151, .15); color: var(--green); }
+.pkg-stats .i.grad2 { background: rgba(255, 181, 71, .15); color: var(--amber); }
+.pkg-stats li > span:last-child {
+  display: flex; flex-direction: row; align-items: baseline; justify-content: space-between;
+  flex: 1; min-width: 0; gap: 8px;
+}
+.pkg-stats b {
+  font-size: 14px; font-weight: 700;
+  white-space: nowrap;
+}
+.pkg-stats small {
+  font-size: 11px; color: var(--txt-mute);
+  white-space: nowrap; text-align: right;
+}
+
+.pkg-roi {
+  padding: 8px 12px; border-radius: 10px;
+  background: rgba(61, 220, 151, .08);
+  border: 1px dashed rgba(61, 220, 151, .35);
+  color: var(--green); font-size: 11.5px;
+  text-align: center; margin-bottom: 14px; letter-spacing: .3px;
+}
+.pkg-roi b { font-size: 15px; font-weight: 800; margin: 0 2px; }
+
+.pkg-btn { padding: 13px 16px; font-size: 13.5px; }
+.pkg-btn[disabled] {
+  background: rgba(61, 220, 151, .15); color: var(--green);
+  border: 1px solid rgba(61, 220, 151, .35); cursor: default;
+}
+
+/* ---------- ACTIVE PACKAGE BANNER (above the grid) ---------- */
+.active-pkg-card {
+  display: flex; align-items: stretch; gap: 0; padding: 0; overflow: hidden;
+  border-color: rgba(255, 210, 74, .35);
+  box-shadow: 0 0 40px -12px rgba(255, 210, 74, .25);
+}
+.active-pkg-side {
+  width: 110px; flex-shrink: 0; display: grid; place-items: center;
+  background: linear-gradient(160deg, rgba(62, 182, 255, .25), rgba(141, 91, 255, .15));
+  font-size: 50px;
+}
+.active-pkg-side.gold      { background: linear-gradient(160deg, rgba(255, 210, 74, .35), rgba(255, 157, 74, .15)); }
+.active-pkg-side.silver    { background: linear-gradient(160deg, rgba(192, 192, 192, .30), rgba(100, 100, 100, .10)); }
+.active-pkg-side.platinum  { background: linear-gradient(160deg, rgba(185, 198, 255, .30), rgba(120, 140, 220, .12)); }
+.active-pkg-side.diamond   { background: linear-gradient(160deg, rgba(91, 240, 255, .30), rgba(40, 120, 180, .12)); }
+.active-pkg-body { padding: 18px 22px; flex: 1; }
+.active-pkg-meta {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  font-size: 12.5px; color: var(--txt-mute);
+}
+.active-pkg-meta i { color: var(--blue); margin-right: 5px; }
+
+/* ---------- topbar / page-head responsive tweak ---------- */
+.topbar-flex { display: flex; align-items: center; justify-content: space-between; }
+
+/* 5-cell mobile bottom nav cells get a touch tighter so 5 fit on small phones */
+@media (max-width: 380px) {
+  .nav-bottom a { font-size: 10px; padding: 6px 2px; }
+  .nav-bottom a i { font-size: 16px; }
+}
+
+/* Hide the topbar bell on mobile — the sticky .mob-header already provides one */
+@media (max-width: 1023px) {
+  .topbar .bell { display: none; }
+  .topbar .page-head { padding-left: 2px; }
+}

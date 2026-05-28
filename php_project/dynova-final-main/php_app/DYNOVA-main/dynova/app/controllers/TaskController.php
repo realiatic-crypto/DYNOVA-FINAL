@@ -1,0 +1,76 @@
+<?php
+class TaskController {
+    public function index(): void {
+        $u = require_user();
+        $uid = (int)$u['id'];
+        $limit = (int)setting('daily_task_limit', DEFAULT_DAILY_TASK_LIMIT);
+        $done  = Task::completedTodayCount($uid);
+        $remaining = max(0, $limit - $done);
+        $next = ($remaining > 0) ? Task::nextForUser($uid) : null;
+        $upcoming = [];
+        if ($next) {
+            $s = db()->prepare(
+                "SELECT * FROM tasks WHERE is_active=1 AND id<>?
+                   AND id NOT IN (SELECT task_id FROM task_completions WHERE user_id=? AND DATE(created_at)=CURDATE())
+                 ORDER BY id ASC LIMIT 4"
+            );
+            $s->execute([$next['id'], $uid]);
+            $upcoming = $s->fetchAll();
+        }
+        view('user/tasks', compact('u','next','upcoming','remaining','limit','done'), 'app');
+    }
+
+    public function submit(): void {
+        $u = require_user();
+        $uid = (int)$u['id'];
+        $taskId = (int)($_POST['task_id'] ?? 0);
+        $rating = max(1, min(5, (int)($_POST['rating'] ?? 0)));
+        if (!$taskId || !$rating) {
+            flash_set('error', 'Please select a rating before submitting.');
+            redirect('tasks');
+        }
+        // Daily limit check
+        $limit = (int)setting('daily_task_limit', DEFAULT_DAILY_TASK_LIMIT);
+        if (Task::completedTodayCount($uid) >= $limit) {
+            flash_set('error', 'Daily task limit reached.');
+            redirect('tasks');
+        }
+        $task = Task::find($taskId);
+        if (!$task || !$task['is_active']) {
+            flash_set('error', 'Task not available.');
+            redirect('tasks');
+        }
+        // Already completed today?
+        $chk = db()->prepare('SELECT 1 FROM task_completions WHERE user_id=? AND task_id=? AND DATE(created_at)=CURDATE()');
+        $chk->execute([$uid, $taskId]);
+        if ($chk->fetchColumn()) {
+            flash_set('error', 'You already completed this task today.');
+            redirect('tasks');
+        }
+
+        $reward = (float)$task['reward'];
+        $compId = Task::recordCompletion($uid, $taskId, $rating, $reward);
+        User::addBalance($uid, $reward, 'task_earnings');
+        Transaction::log($uid, 'task', $reward, $task['title']);
+
+        // Multi-level referral bonuses
+        $percents = [
+            1 => (float)setting('referral_l1', DEFAULT_REFERRAL_L1),
+            2 => (float)setting('referral_l2', DEFAULT_REFERRAL_L2),
+            3 => (float)setting('referral_l3', DEFAULT_REFERRAL_L3),
+        ];
+        $chain = User::ancestorChain($uid);
+        foreach ($chain as $i => $ancestorId) {
+            $level = $i + 1;
+            if (!$ancestorId) continue;
+            $bonus = round($reward * $percents[$level] / 100, 2);
+            if ($bonus <= 0) continue;
+            User::addBalance((int)$ancestorId, $bonus, 'referral_earnings');
+            Referral::log((int)$ancestorId, $uid, $level, $compId, $bonus, $percents[$level]);
+            Transaction::log((int)$ancestorId, 'referral', $bonus, "L{$level} from " . ($u['name'] ?: $u['whatsapp']));
+        }
+
+        flash_set('success', 'Task submitted! +' . money($reward) . ' added to your wallet.');
+        redirect('tasks');
+    }
+}

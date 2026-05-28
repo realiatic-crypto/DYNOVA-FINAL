@@ -1,0 +1,44 @@
+{
+  "summary": "Iteration 2 re-verification of 2 fixed HIGH bugs + previously-skipped cross-user referral commission test on PHP+MariaDB DYNOVA NETWORK app via FastAPI reverse-proxy. All 4 targeted tests PASS: (1) referral link now uses public domain, (2) star-N data-testids work and rating submission credits +Rs 50, (3) admin settings (L1 10->12) persists across reload, (4) L1 referral commission credits referrer +Rs 5 (10% of 50 PKR) and shows up in Recent Activity as 'L1 from UserB5'.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "TEST_1_referral_link_public_domain": {
+      "status": "PASS",
+      "evidence": "Referral link captured: https://video-income-24.preview.emergentagent.com/api/?r=auth/signup&ref=DN729303ABC (no 127.0.0.1, no :9000)"
+    },
+    "TEST_2_task_rating_submission": {
+      "status": "PASS",
+      "evidence": "data-testid='star-5' present, label click toggles #s5 input.checked=true, submit-rating triggers flash 'Task submitted! +Rs 50.00 added to your wallet.'"
+    },
+    "TEST_3_settings_persistence": {
+      "status": "PASS",
+      "evidence": "Logged in as admin@dynova.com, changed referral_l1 from 10 to 12 via settings-general-form. After reload of /api/?r=admin/settings, input retained value=12. Flash 'Settings updated.' shown. Restored back to 10 after test."
+    },
+    "TEST_4_multi_level_commission": {
+      "status": "PASS",
+      "evidence": "Signed up UserA5 (whatsapp 3069729380, ref DN72938061D). Logged out via /api/?r=auth/logout. Signed up UserB5 via /api/?r=auth/signup&ref=DN72938061D — hidden ref field auto-populated correctly. UserB5 submitted 1 task (+Rs 50). Logged back in as UserA5: dashboard shows TOTAL BALANCE Rs 5.00, TODAY'S EARNINGS Rs 5.00, Recent Activity entry 'Referral · L1 from UserB5  +Rs 5.00'. Commission = 10% of 50 = 5 PKR confirmed."
+    }
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Minor: page.context.clear_cookies() does not fully reset PHP session state through the FastAPI proxy — proper /api/?r=auth/logout endpoint should be used to switch users in tests. Not a product bug, just a testing note.",
+    "Minor: dashboard widget elements [data-testid='balance'], [data-testid='referral-earnings'], [data-testid='total-referrals'] return null from .innerText in headless contexts but render visually fine. Possibly nested SVG/span structure — consider exposing pure-text testid on the numeric value node for easier automated assertion."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "skipped (frontend-only)", "frontend": "100% (4/4 targeted tests passed)"},
+  "test_credentials": "Admin: admin@dynova.com / password. Test users created during run: UserA5 (3069729380/test1234) ref DN72938061D, UserB5 (3079729380/test1234) — both signed up via public signup endpoint.",
+  "seed_data_creation": "Created several test users (UserA/UserB variants 4-5 with unique whatsapp numbers) and submitted 1 task per user. Admin L1 was temporarily changed to 12 then restored to 10.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All 4 priority items from iteration 2 review request are verified working. The referral commission cross-user flow specifically requires using /api/?r=auth/logout (not page.context.clear_cookies) to switch users — clearing cookies through the FastAPI proxy seems to cause the next ?r=auth/signup&ref=... request to redirect to login. Captcha 'What is X + Y?' regex parses cleanly. Iteration 1 HIGH bug (referral link with 127.0.0.1) and nit (missing star-N testids) are both fixed and confirmed.",
+  "rca_of_the_issue": "N/A — all previously-reported bugs have been verified as fixed."
+}
