@@ -6,8 +6,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#04070f">
 <title><?= e(setting('site_name', APP_NAME)) ?> – Rate. Earn. Refer.</title>
-<meta name="description" content="DYNOVA NETWORK – the premier video-rating earning platform. Rate videos, refer friends across 3 levels, climb ranks and earn weekly salary in PKR.">
-<link rel="icon" type="image/jpeg" href="<?= asset('img/logo.jpg') ?>">
+<meta name="description" content="DYNOVA NETWORK – Pakistan's premier video-rating earning platform. Rate sponsored videos in minutes, build a 3-level referral team, climb salary ranks and withdraw to JazzCash or EasyPaisa in PKR.">
+<meta name="keywords" content="DYNOVA NETWORK, dynova, video rating, earn money online Pakistan, JazzCash, EasyPaisa, referral earning, MLM, PKR, task earning platform">
+<meta property="og:title" content="DYNOVA NETWORK – Rate. Earn. Refer.">
+<meta property="og:description" content="Rate videos, refer friends across 3 levels, climb ranks and earn monthly salary in PKR.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/jpeg" sizes="any" href="<?= asset('img/logo.jpg') ?>">
+<link rel="shortcut icon" type="image/jpeg" href="<?= asset('img/logo.jpg') ?>">
+<link rel="apple-touch-icon" href="<?= asset('img/logo.jpg') ?>">
 <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
 <link rel="stylesheet" href="<?= asset('css/landing.css') ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">

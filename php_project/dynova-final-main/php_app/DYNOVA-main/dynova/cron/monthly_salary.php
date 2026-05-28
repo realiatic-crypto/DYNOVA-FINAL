@@ -22,10 +22,10 @@ cron_run('monthly_salary', function () {
     foreach ($users as $row) {
         $uid  = (int) $row['id'];
         $rank = Salary::rankFor($uid);
-        if (!$rank || (float) $rank['weekly_salary'] <= 0) { $skipped++; continue; }
+        if (!$rank || (float) $rank['monthly_salary'] <= 0) { $skipped++; continue; }
 
-        // Monthly amount = weekly_salary × 4 (matches the legacy weekly rate × 4 weeks)
-        $amount = (float) $rank['weekly_salary'] * 4;
+        // Salary set by admin per rank (monthly).
+        $amount = (float) $rank['monthly_salary'];
 
         try {
             db()->prepare(

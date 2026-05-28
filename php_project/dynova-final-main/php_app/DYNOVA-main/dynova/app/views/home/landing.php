@@ -180,7 +180,7 @@ $currency = APP_CURRENCY_SYMBOL;
     <div class="lp-section-head reveal">
       <span class="kicker">Four ways to earn</span>
       <h2>Stack <span class="grad-text">multiple income streams</span> — all in one app.</h2>
-      <p>DYNOVA isn't just task earnings. Build a team and your income compounds automatically every week.</p>
+      <p>DYNOVA isn't just task earnings. Build a team and your income compounds automatically every month.</p>
     </div>
     <div class="earn-grid">
       <div class="earn-card reveal" style="--d:0s">
@@ -197,9 +197,9 @@ $currency = APP_CURRENCY_SYMBOL;
       </div>
       <div class="earn-card reveal" style="--d:.16s">
         <div class="earn-ic amber"><i class="fa-solid fa-trophy"></i></div>
-        <h3>Weekly salary</h3>
-        <p>Hit rank milestones and unlock a fixed weekly salary — paid automatically every Sunday.</p>
-        <div class="earn-tag">Up to <?= $currency ?> 12,000/week</div>
+        <h3>Monthly salary</h3>
+        <p>Hit rank milestones and unlock a fixed monthly salary — paid automatically on the 1st of every month.</p>
+        <div class="earn-tag">Up to <?= $currency ?> 48,000/month</div>
       </div>
       <div class="earn-card reveal" style="--d:.24s">
         <div class="earn-ic green"><i class="fa-solid fa-gift"></i></div>
@@ -216,16 +216,16 @@ $currency = APP_CURRENCY_SYMBOL;
   <div class="lp-container">
     <div class="lp-section-head reveal">
       <span class="kicker">Salary ranks</span>
-      <h2>Climb the ladder. <span class="grad-text">Get paid every week.</span></h2>
-      <p>The more you refer, the higher your rank — and the higher your weekly salary, on top of everything else you earn.</p>
+      <h2>Climb the ladder. <span class="grad-text">Get paid every month.</span></h2>
+      <p>The more you refer, the higher your rank — and the higher your monthly salary, on top of everything else you earn.</p>
     </div>
     <div class="ranks-grid">
       <?php
       $rankFallback = [
-        ['name'=>'Bronze',  'emoji'=>'🥉','min_referrals'=>5,  'min_business'=>10000,  'weekly_salary'=>500],
-        ['name'=>'Silver',  'emoji'=>'🥈','min_referrals'=>20, 'min_business'=>50000,  'weekly_salary'=>2000],
-        ['name'=>'Gold',    'emoji'=>'🥇','min_referrals'=>50, 'min_business'=>200000, 'weekly_salary'=>5000],
-        ['name'=>'Diamond', 'emoji'=>'💎','min_referrals'=>100,'min_business'=>500000, 'weekly_salary'=>12000],
+          ['name'=>'Bronze',  'emoji'=>'🥉','min_referrals'=>5,  'min_business'=>10000,  'monthly_salary'=>2000],
+          ['name'=>'Silver',  'emoji'=>'🥈','min_referrals'=>20, 'min_business'=>50000,  'monthly_salary'=>8000],
+          ['name'=>'Gold',    'emoji'=>'🥇','min_referrals'=>50, 'min_business'=>200000, 'monthly_salary'=>20000],
+          ['name'=>'Diamond', 'emoji'=>'💎','min_referrals'=>100,'min_business'=>500000, 'monthly_salary'=>48000],
       ];
       $displayRanks = !empty($ranks) ? $ranks : $rankFallback;
       $tones = ['bronze','silver','gold','diamond'];
@@ -308,7 +308,7 @@ $currency = APP_CURRENCY_SYMBOL;
       </div>
       <div class="testi-card reveal" style="--d:.2s">
         <div class="testi-stars">★★★★★</div>
-        <p>"Started with zero investment. After 6 months my team is 80+ strong and I'm pulling Diamond weekly salary."</p>
+        <p>"Started with zero investment. After 6 months my team is 80+ strong and I'm pulling Diamond monthly salary."</p>
         <div class="testi-who">
           <span class="av" style="background:linear-gradient(135deg,#3ddc97,#3eb6ff)">U</span>
           <div><b>Usman T.</b><small>Islamabad · Diamond rank</small></div>
@@ -368,3 +368,4 @@ $currency = APP_CURRENCY_SYMBOL;
     </div>
   </div>
 </section>
+/section>

@@ -6,7 +6,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#04070f">
 <title><?= e(setting('site_name', APP_NAME)) ?> – Welcome</title>
-<link rel="icon" type="image/jpeg" href="<?= asset('img/logo.jpg') ?>">
+<meta name="description" content="Sign in or create your DYNOVA NETWORK account – rate videos, refer friends, earn in PKR.">
+<link rel="icon" type="image/jpeg" sizes="any" href="<?= asset('img/logo.jpg') ?>">
+<link rel="shortcut icon" type="image/jpeg" href="<?= asset('img/logo.jpg') ?>">
+<link rel="apple-touch-icon" href="<?= asset('img/logo.jpg') ?>">
 <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

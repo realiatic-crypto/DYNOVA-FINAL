@@ -95,4 +95,22 @@ class User {
         $s->execute($ids);
         return (float)$s->fetchColumn();
     }
+
+    /** Get business volume (deposit_total + task_earnings) of users at a specific downline level (1, 2 or 3) */
+    public static function teamBusinessAtLevel(int $uid, int $level): float {
+        if ($level < 1 || $level > 3) return 0.0;
+        $current = [$uid];
+        for ($i = 1; $i <= $level; $i++) {
+            if (!$current) return 0.0;
+            $in = implode(',', array_fill(0, count($current), '?'));
+            $s = db()->prepare("SELECT id FROM users WHERE referred_by IN ($in)");
+            $s->execute($current);
+            $current = array_map('intval', array_column($s->fetchAll(), 'id'));
+        }
+        if (!$current) return 0.0;
+        $in = implode(',', array_fill(0, count($current), '?'));
+        $s = db()->prepare("SELECT COALESCE(SUM(deposit_total + task_earnings),0) FROM users WHERE id IN ($in)");
+        $s->execute($current);
+        return (float)$s->fetchColumn();
+    }
 }

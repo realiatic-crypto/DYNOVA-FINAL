@@ -9,7 +9,10 @@ $flashes = flash_pull();
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#04070f">
 <title><?= e(setting('site_name', APP_NAME)) ?> – Admin</title>
-<link rel="icon" type="image/jpeg" href="<?= asset('img/logo.jpg') ?>">
+<meta name="description" content="DYNOVA NETWORK administration console.">
+<link rel="icon" type="image/jpeg" sizes="any" href="<?= asset('img/logo.jpg') ?>">
+<link rel="shortcut icon" type="image/jpeg" href="<?= asset('img/logo.jpg') ?>">
+<link rel="apple-touch-icon" href="<?= asset('img/logo.jpg') ?>">
 <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
 <link rel="stylesheet" href="<?= asset('css/extras.css') ?>">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">

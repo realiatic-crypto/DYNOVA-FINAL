@@ -26,9 +26,9 @@
           <?php endforeach; ?>
         </select></div>
 
-      <div class="form-group"><label>Emoji / Icon</label>
+      <div class="form-group"><label>Emoji / Icon (optional, not shown on packages)</label>
         <input class="input" type="text" name="emoji" maxlength="4"
-               value="<?= e($editing['emoji'] ?? '') ?>" placeholder="🥇" data-testid="pkg-emoji"></div>
+               value="<?= e($editing['emoji'] ?? '') ?>" placeholder="" data-testid="pkg-emoji"></div>
 
       <div class="form-group"><label>Price (PKR)</label>
         <input class="input" type="number" name="price" step="0.01" min="0" required
@@ -41,10 +41,6 @@
       <div class="form-group"><label>Daily Earning (PKR)</label>
         <input class="input" type="number" name="daily_earning" step="0.01" min="0" required
                value="<?= e($editing['daily_earning'] ?? '') ?>" placeholder="147" data-testid="pkg-daily-earning"></div>
-
-      <div class="form-group"><label>Validity (days)</label>
-        <input class="input" type="number" name="validity_days" min="1" required
-               value="<?= e($editing['validity_days'] ?? '30') ?>" placeholder="30" data-testid="pkg-validity"></div>
 
       <div class="form-group"><label>Sort order</label>
         <input class="input" type="number" name="sort_order"
@@ -80,16 +76,16 @@
   <table class="table" data-testid="admin-packages-table">
     <thead><tr>
       <th>ID</th><th>Name</th><th>Tier</th><th>Price</th><th>Daily tasks</th>
-      <th>Daily earning</th><th>Monthly</th><th>Validity</th><th>Status</th><th>Actions</th>
+      <th>Daily earning</th><th>Monthly</th><th>Status</th><th>Actions</th>
     </tr></thead>
     <tbody>
     <?php if (!$packages): ?>
-      <tr><td colspan="10" class="empty">No packages yet — create one above.</td></tr>
+      <tr><td colspan="9" class="empty">No packages yet — create one above.</td></tr>
     <?php else: foreach ($packages as $p):
       $monthly = (float)$p['daily_earning'] * 30; ?>
       <tr>
         <td>#<?= (int)$p['id'] ?></td>
-        <td><b><?= e($p['emoji']) ?> <?= e($p['name']) ?></b>
+        <td><b><?= e($p['name']) ?></b>
           <?php if ($p['is_featured']): ?><span class="badge approved" style="margin-left:6px">★ featured</span><?php endif; ?>
         </td>
         <td><span class="badge active"><?= e($p['tier']) ?></span></td>
@@ -97,7 +93,6 @@
         <td><?= (int)$p['daily_tasks'] ?></td>
         <td><?= money($p['daily_earning']) ?></td>
         <td><?= money($monthly) ?></td>
-        <td><?= (int)$p['validity_days'] ?> days</td>
         <td><?php if ($p['is_active']): ?>
               <span class="badge approved">Active</span>
             <?php else: ?>

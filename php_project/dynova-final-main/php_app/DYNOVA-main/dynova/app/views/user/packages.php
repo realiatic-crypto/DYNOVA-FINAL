@@ -19,16 +19,12 @@ function pkg_money($amount) {
 
 <?php if ($active): ?>
   <div class="card active-pkg-card stagger" data-testid="active-package">
-    <div class="active-pkg-side <?= e($active['tier']) ?>">
-      <span class="emo"><?= e($active['emoji'] ?: '🎁') ?></span>
-    </div>
-    <div class="active-pkg-body">
+    <div class="active-pkg-body" style="padding:18px 20px">
       <div class="small muted" style="letter-spacing:1.4px;text-transform:uppercase">Active package</div>
       <h3 style="margin:2px 0 6px;font-size:20px"><?= e($active['pkg_name']) ?></h3>
       <div class="active-pkg-meta">
         <span><i class="fa-solid fa-star"></i> <?= (int)$active['daily_tasks'] ?> tasks/day</span>
         <span><i class="fa-solid fa-coins"></i> <?= money($active['daily_earning']) ?> /day</span>
-        <span><i class="fa-solid fa-clock"></i> until <?= e(date('M d, Y', strtotime($active['expires_at']))) ?></span>
       </div>
     </div>
   </div>
@@ -37,8 +33,6 @@ function pkg_money($amount) {
 <div class="packages-grid stagger" data-testid="packages-grid">
   <?php foreach ($packages as $p):
     $tier = $p['tier'] ?: 'standard';
-    $monthly = (float)$p['daily_earning'] * 30;
-    $roiPct = (float)$p['price'] > 0 ? ($monthly / (float)$p['price']) * 100 : 0;
     $isFeatured = (int)$p['is_featured'] === 1;
     $isCurrent = $active && (int)$active['package_id'] === (int)$p['id'];
   ?>
@@ -46,8 +40,7 @@ function pkg_money($amount) {
     <?php if ($isFeatured): ?>
       <div class="pkg-ribbon"><i class="fa-solid fa-fire"></i> Most popular</div>
     <?php endif; ?>
-    <div class="pkg-head">
-      <div class="pkg-emoji"><?= e($p['emoji'] ?: '✦') ?></div>
+    <div class="pkg-head" style="margin-bottom:14px">
       <div>
         <div class="pkg-name"><?= e($p['name']) ?></div>
         <div class="pkg-tier"><?= e(strtoupper($tier)) ?> · PACKAGE</div>
@@ -71,17 +64,9 @@ function pkg_money($amount) {
       </li>
       <li>
         <span class="i grad2"><i class="fa-solid fa-arrow-trend-up"></i></span>
-        <span><b><?= pkg_money($monthly) ?></b><small>Monthly earning</small></span>
-      </li>
-      <li>
-        <span class="i"><i class="fa-solid fa-calendar-days"></i></span>
-        <span><b><?= (int)$p['validity_days'] ?> days</b><small>Validity</small></span>
+        <span><b><?= pkg_money((float)$p['daily_earning'] * 30) ?></b><small>Monthly earning</small></span>
       </li>
     </ul>
-
-    <div class="pkg-roi">
-      ROI <b><?= number_format($roiPct, 0) ?>%</b> in <?= (int)$p['validity_days'] ?> days
-    </div>
 
     <?php if ($isCurrent): ?>
       <button class="btn pkg-btn ghost" disabled data-testid="pkg-current-<?= (int)$p['id'] ?>">
@@ -120,6 +105,6 @@ function pkg_money($amount) {
     <li>Activating a package debits the price from your <b>wallet balance</b>.</li>
     <li>You instantly unlock the package's daily task limit and earning rate.</li>
     <li>Earnings are credited as you complete tasks every day.</li>
-    <li>When a package expires you can renew or upgrade to a higher tier.</li>
+    <li>Upgrade any time — activating a higher tier replaces your current plan.</li>
   </ul>
 </div>

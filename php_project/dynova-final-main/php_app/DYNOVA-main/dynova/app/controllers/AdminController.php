@@ -243,28 +243,48 @@ class AdminController {
             $act = $_POST['action'] ?? '';
             if ($act === 'save') {
                 $id = (int)($_POST['id'] ?? 0);
+                $l1m = (int)($_POST['min_l1_members'] ?? 0);
+                $l2m = (int)($_POST['min_l2_members'] ?? 0);
+                $l3m = (int)($_POST['min_l3_members'] ?? 0);
+                $l1b = (float)($_POST['min_l1_business'] ?? 0);
+                $l2b = (float)($_POST['min_l2_business'] ?? 0);
+                $l3b = (float)($_POST['min_l3_business'] ?? 0);
                 $data = [
                     $_POST['name'] ?? '',
                     $_POST['emoji'] ?? '',
-                    (int)($_POST['min_referrals'] ?? 0),
-                    (float)($_POST['min_business'] ?? 0),
-                    (float)($_POST['weekly_salary'] ?? 0),
+                    $l1m + $l2m + $l3m,                  // legacy min_referrals (total)
+                    $l1m, $l2m, $l3m,
+                    $l1b + $l2b + $l3b,                  // legacy min_business (total)
+                    $l1b, $l2b, $l3b,
+                    (float)($_POST['monthly_salary'] ?? 0),
                     (int)($_POST['sort_order'] ?? 0),
                 ];
                 if ($id) {
-                    db()->prepare('UPDATE salary_ranks SET name=?, emoji=?, min_referrals=?, min_business=?, weekly_salary=?, sort_order=? WHERE id=?')
-                        ->execute([...$data, $id]);
+                    db()->prepare(
+                        'UPDATE salary_ranks SET
+                            name=?, emoji=?,
+                            min_referrals=?, min_l1_members=?, min_l2_members=?, min_l3_members=?,
+                            min_business=?, min_l1_business=?, min_l2_business=?, min_l3_business=?,
+                            monthly_salary=?, sort_order=?
+                          WHERE id=?'
+                    )->execute([...$data, $id]);
                 } else {
-                    db()->prepare('INSERT INTO salary_ranks (name,emoji,min_referrals,min_business,weekly_salary,sort_order) VALUES (?,?,?,?,?,?)')
-                        ->execute($data);
+                    db()->prepare(
+                        'INSERT INTO salary_ranks
+                          (name, emoji,
+                           min_referrals, min_l1_members, min_l2_members, min_l3_members,
+                           min_business, min_l1_business, min_l2_business, min_l3_business,
+                           monthly_salary, sort_order)
+                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)'
+                    )->execute($data);
                 }
                 flash_set('success','Rank saved.');
             } elseif ($act === 'delete') {
                 db()->prepare('DELETE FROM salary_ranks WHERE id=?')->execute([(int)$_POST['id']]);
                 flash_set('success','Rank deleted.');
             } elseif ($act === 'pay_now') {
-                $n = Salary::payWeekly();
-                flash_set('success', "Salaries paid to $n users.");
+                $n = Salary::payMonthly();
+                flash_set('success', "Monthly salaries paid to $n users.");
             }
             redirect('admin/ranks');
         }

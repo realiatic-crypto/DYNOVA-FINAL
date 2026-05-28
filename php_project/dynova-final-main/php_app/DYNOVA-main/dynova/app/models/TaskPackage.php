@@ -16,11 +16,15 @@ class TaskPackage {
         return $s->fetch() ?: null;
     }
     public static function save(?int $id, array $d): int {
+        // Validity is no longer surfaced in the UI – default to a very high value
+        // so packages effectively never expire (admin can still pass one in if needed).
+        $validity = (int)($d['validity_days'] ?? 0);
+        if ($validity <= 0) $validity = 36500; // ~100 years
         $cols = [
             $d['name'], $d['tier'] ?: 'standard', $d['emoji'] ?? '',
             (float)($d['price'] ?? 0), (int)($d['daily_tasks'] ?? 1),
             (float)($d['daily_earning'] ?? 0),
-            (int)($d['validity_days'] ?? 30),
+            $validity,
             (int)($d['is_featured'] ?? 0),
             (int)($d['is_active'] ?? 1),
             (int)($d['sort_order'] ?? 0),

@@ -39,6 +39,8 @@ try {
             (new TaskController())->submit(); break;
         case $route === 'packages':
             (new PackageController())->index(); break;
+        case $route === 'ranks':
+            (new RankController())->index(); break;
         case $route === 'referrals':
             (new ReferralController())->index(); break;
         case $route === 'wallet':
