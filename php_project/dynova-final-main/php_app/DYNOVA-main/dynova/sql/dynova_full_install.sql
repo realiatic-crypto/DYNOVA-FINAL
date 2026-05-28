@@ -191,15 +191,17 @@ CREATE TABLE withdrawals (
 -- ------------------------------------------------------ referrals (ledger of paid commissions)
 CREATE TABLE referrals (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  upline_user_id INT UNSIGNED NOT NULL,
+  user_id INT UNSIGNED NOT NULL,
   source_user_id INT UNSIGNED NOT NULL,
   level TINYINT NOT NULL,
+  source_completion_id INT UNSIGNED NULL,
   amount DECIMAL(10,2) NOT NULL,
+  percent DECIMAL(6,2) NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_upline (upline_user_id),
+  INDEX idx_user (user_id),
   INDEX idx_source (source_user_id),
-  CONSTRAINT fk_ref_upline FOREIGN KEY (upline_user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT fk_ref_src    FOREIGN KEY (source_user_id) REFERENCES users(id) ON DELETE CASCADE
+  CONSTRAINT fk_ref_user   FOREIGN KEY (user_id)        REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_ref_source FOREIGN KEY (source_user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ------------------------------------------------------ salary_ranks (per-level requirements)

@@ -458,3 +458,85 @@ select.input option:hover,
   border-radius:13px !important;
 }
 .pm-logo-bank i{font-size:inherit}
+
+/* ============ Mobile optimization (≤480px) ============ */
+@media (max-width: 480px) {
+  /* Tighter shell padding so cards have more screen width */
+  .shell { padding: 12px 12px 90px !important; }
+
+  /* Headings & subtitles */
+  .page-title { font-size: 22px !important; line-height: 1.2 !important; }
+  .page-sub   { font-size: 12px !important; }
+  .topbar     { padding: 6px 0 10px !important; gap: 10px !important; flex-wrap: wrap !important; }
+  .topbar-flex{ align-items: flex-start !important; }
+  .greet b    { font-size: 15px !important; }
+
+  /* Cards: less padding, less radius shock */
+  .card { padding: 14px 14px !important; border-radius: 16px !important; }
+
+  /* Balance amount: shrink so it never overflows */
+  .balance-amount { font-size: 30px !important; word-break: break-word; }
+  .balance-card   { padding: 16px 16px !important; }
+
+  /* Stat grid → always 2 columns instead of 4 */
+  .stat-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  .stat .val { font-size: 16px !important; }
+  .stat .lbl { font-size: 10.5px !important; }
+
+  /* Buttons: stretchier hit-targets */
+  .btn { padding: 13px 16px !important; font-size: 14px !important; }
+  .btn.inline { padding: 9px 14px !important; }
+
+  /* Tables wrap to horizontal scroll instead of breaking layout */
+  .table { font-size: 12px !important; min-width: 480px; }
+  .card > div[style*="overflow-x"]{ -webkit-overflow-scrolling: touch; }
+
+  /* Referral / package grids stack to single column */
+  .ref-link-row { flex-direction: column !important; gap: 8px !important; }
+  .ref-link-btn { width: 100% !important; justify-content: center !important; }
+  .ref-link-input { width: 100% !important; }
+  .packages-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .pkg-card     { padding: 16px !important; }
+
+  /* Withdraw ladder rungs */
+  .wd-rung { grid-template-columns: 28px 1fr auto !important; gap: 8px !important; padding: 9px 10px !important; }
+  .wd-rung-num { width: 26px; height: 26px; font-size: 12px; }
+  .wd-rung-label { font-size: 11.5px !important; }
+  .wd-rung-amt   { font-size: 13px !important; }
+
+  /* Developer hub cards: comfortable single column */
+  .dev-hub-grid { grid-template-columns: 1fr !important; }
+  .dev-hub-card { padding: 14px !important; gap: 10px !important; }
+  .dev-hub-title { font-size: 14.5px !important; }
+  .dev-hub-desc  { font-size: 11.5px !important; }
+
+  /* Forms: full-width inputs */
+  .form-group { margin-bottom: 12px !important; }
+  .input { padding: 11px 12px !important; font-size: 14px !important; }
+  .admin-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+
+  /* Bottom-nav: snug labels so all 5 cells stay on one line */
+  .nav-bottom a, .nav-more-btn { font-size: 10px !important; }
+  .nav-bottom a i, .nav-more-btn i { font-size: 17px !important; }
+
+  /* Activity rows */
+  .activity { padding: 10px 12px !important; gap: 10px !important; }
+  .activity .meta b { font-size: 13px !important; }
+  .activity .meta small { font-size: 11px !important; }
+
+  /* Pay-method radio cards */
+  .pm-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+}
+
+/* Even smaller phones (≤360px) */
+@media (max-width: 360px) {
+  .stat-grid { grid-template-columns: 1fr !important; }
+  .balance-amount { font-size: 26px !important; }
+  .page-title { font-size: 20px !important; }
+  .nav-bottom a, .nav-more-btn { font-size: 9.5px !important; padding: 6px 2px !important; }
+}
+
+/* Lock viewport zoom level — prevents iOS auto-zoom on focused inputs */
+@media (max-width: 480px) {
+  input.input, select.input, textarea.input { font-size: 16px !important; }
+}
