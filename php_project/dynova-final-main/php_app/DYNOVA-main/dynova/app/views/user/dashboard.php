@@ -19,11 +19,35 @@
   <span class="pkr-badge"><i class="fa-solid fa-bolt"></i> PKR Wallet · <?= e($u['referral_code']) ?></span>
 </div>
 
+<!-- Referral link share card -->
+<div class="card ref-link-card stagger" data-testid="dash-referral-card">
+  <div class="ref-link-head">
+    <div class="ref-link-icon"><i class="fa-solid fa-link"></i></div>
+    <div>
+      <div class="ref-link-title">Your referral link</div>
+      <div class="ref-link-sub">Invite friends and earn on every join + 3 levels of team activity.</div>
+    </div>
+  </div>
+  <div class="ref-link-row">
+    <input type="text" class="ref-link-input" id="dashRefLink" readonly
+           value="<?= e($referralLink) ?>" data-testid="dash-ref-input">
+    <button type="button" class="ref-link-btn copy-btn" data-copy="#dashRefLink"
+            data-testid="dash-ref-copy" aria-label="Copy referral link">
+      <i class="fa-solid fa-copy"></i>
+      <span>Copy</span>
+    </button>
+  </div>
+  <div class="ref-link-foot">
+    <span><i class="fa-solid fa-hashtag"></i> Code: <b><?= e($u['referral_code']) ?></b></span>
+    <a href="<?= route_url('referrals') ?>" data-testid="dash-ref-more">See referrals →</a>
+  </div>
+</div>
+
 <div class="stat-grid stagger">
   <div class="stat" data-testid="stat-today"><div class="ico"><i class="fa-solid fa-coins"></i></div>
     <div class="lbl">Today's Earnings</div><div class="val"><?= money($todayEarnings) ?></div></div>
-  <div class="stat v" data-testid="stat-refs"><div class="ico"><i class="fa-solid fa-users"></i></div>
-    <div class="lbl">Total Referrals</div><div class="val"><?= (int)$referralCount ?></div></div>
+  <div class="stat v" data-testid="stat-team"><div class="ico"><i class="fa-solid fa-users"></i></div>
+    <div class="lbl">Total Team</div><div class="val"><?= (int)$teamCount ?></div></div>
   <div class="stat p" data-testid="stat-pending"><div class="ico"><i class="fa-solid fa-hourglass-half"></i></div>
     <div class="lbl">Pending Withdrawal</div><div class="val"><?= money($pendingWd) ?></div></div>
   <div class="stat g" data-testid="stat-tasks"><div class="ico"><i class="fa-solid fa-star"></i></div>

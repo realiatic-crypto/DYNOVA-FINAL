@@ -46,4 +46,57 @@
       setTimeout(()=>a.style.transform='',150);
     });
   });
+
+  // ---------- Mobile "More" drop-up sheet ----------
+  const moreBtn      = document.getElementById('navMoreBtn');
+  const moreSheet    = document.getElementById('moreSheet');
+  const moreBackdrop = document.getElementById('moreBackdrop');
+  const moreClose    = document.getElementById('moreClose');
+  function openMore(){
+    if(!moreSheet) return;
+    moreSheet.classList.add('is-open');
+    moreSheet.setAttribute('aria-hidden','false');
+    moreBackdrop && moreBackdrop.classList.add('is-open');
+    moreBtn && moreBtn.classList.add('is-open');
+    moreBtn && moreBtn.setAttribute('aria-expanded','true');
+    document.body.style.overflow='hidden';
+  }
+  function closeMore(){
+    if(!moreSheet) return;
+    moreSheet.classList.remove('is-open');
+    moreSheet.setAttribute('aria-hidden','true');
+    moreBackdrop && moreBackdrop.classList.remove('is-open');
+    moreBtn && moreBtn.classList.remove('is-open');
+    moreBtn && moreBtn.setAttribute('aria-expanded','false');
+    document.body.style.overflow='';
+  }
+  moreBtn && moreBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    if(moreSheet.classList.contains('is-open')) closeMore(); else openMore();
+  });
+  moreClose && moreClose.addEventListener('click', closeMore);
+  moreBackdrop && moreBackdrop.addEventListener('click', closeMore);
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeMore(); });
+
+  // ---------- Copy button for any [data-copy="#selector"] target ----------
+  document.querySelectorAll('[data-copy]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const target = document.querySelector(btn.getAttribute('data-copy'));
+      if(!target) return;
+      const txt = target.value || target.textContent || '';
+      const fallback = ()=>{
+        target.select && target.select();
+        try{ document.execCommand('copy'); }catch(e){}
+      };
+      if(navigator.clipboard){
+        navigator.clipboard.writeText(txt).catch(fallback);
+      }else fallback();
+      const t = document.getElementById('copyToast');
+      if(t){ t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1400); }
+      // small visual feedback on the button itself
+      const old = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i><span>Copied</span>';
+      setTimeout(()=>{ btn.innerHTML = old; }, 1400);
+    });
+  });
 })();

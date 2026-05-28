@@ -79,10 +79,61 @@ $initial = $src !== '' ? strtoupper(mb_substr($src, 0, 1, 'UTF-8')) : '·';
   <a href="<?= route_url('dashboard') ?>" class="<?= $current==='dashboard'?'active':'' ?>" data-testid="nav-home"><i class="fa-solid fa-house"></i>Home</a>
   <a href="<?= route_url('tasks') ?>" class="<?= str_starts_with($current,'tasks')?'active':'' ?>" data-testid="nav-tasks"><i class="fa-solid fa-star"></i>Tasks</a>
   <a href="<?= route_url('packages') ?>" class="<?= $current==='packages'?'active':'' ?>" data-testid="nav-packages"><i class="fa-solid fa-box-open"></i>Plans</a>
-  <a href="<?= route_url('ranks') ?>" class="<?= $current==='ranks'?'active':'' ?>" data-testid="nav-ranks"><i class="fa-solid fa-medal"></i>Ranks</a>
-  <a href="<?= route_url('wallet') ?>" class="<?= str_starts_with($current,'wallet')?'active':'' ?>" data-testid="nav-wallet"><i class="fa-solid fa-wallet"></i>Wallet</a>
-  <a href="<?= route_url('profile') ?>" class="<?= str_starts_with($current,'profile')?'active':'' ?>" data-testid="nav-profile"><i class="fa-solid fa-user"></i>Profile</a>
+  <a href="<?= route_url('ranks') ?>" class="<?= $current==='ranks'?'active':'' ?>" data-testid="nav-salary"><i class="fa-solid fa-medal"></i>Salary</a>
+  <button type="button" class="nav-more-btn <?= in_array($current, ['wallet','wallet/deposit','wallet/withdraw','profile','profile/password','referrals','bonuses'], true) ? 'active' : '' ?>"
+          id="navMoreBtn" data-testid="nav-more" aria-haspopup="true" aria-expanded="false">
+    <i class="fa-solid fa-ellipsis"></i>More
+  </button>
 </nav>
+
+<!-- ============ Drop-up "More" sheet (mobile) ============ -->
+<div class="more-backdrop" id="moreBackdrop" data-testid="more-backdrop" aria-hidden="true"></div>
+<div class="more-sheet" id="moreSheet" data-testid="more-sheet" role="dialog" aria-label="More menu" aria-hidden="true">
+  <div class="more-sheet-handle"></div>
+  <div class="more-sheet-head">
+    <div>
+      <div class="small muted" style="letter-spacing:1.4px;text-transform:uppercase">Quick menu</div>
+      <h3 style="margin:2px 0 0;font-size:18px">More options</h3>
+    </div>
+    <button type="button" class="more-close" id="moreClose" data-testid="more-close" aria-label="Close menu">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  <div class="more-grid">
+    <a href="<?= route_url('wallet') ?>" class="more-item <?= str_starts_with($current,'wallet')?'is-active':'' ?>" data-testid="more-wallet">
+      <span class="mi-icon" style="background:rgba(61,220,151,.14);color:var(--green,#3ddc97)"><i class="fa-solid fa-wallet"></i></span>
+      <span class="mi-label">Wallet</span>
+    </a>
+    <a href="<?= route_url('wallet/deposit') ?>" class="more-item" data-testid="more-deposit">
+      <span class="mi-icon" style="background:rgba(62,182,255,.14);color:var(--blue,#3eb6ff)"><i class="fa-solid fa-circle-down"></i></span>
+      <span class="mi-label">Deposit</span>
+    </a>
+    <a href="<?= route_url('wallet/withdraw') ?>" class="more-item" data-testid="more-withdraw">
+      <span class="mi-icon" style="background:rgba(141,91,255,.14);color:var(--violet,#8d5bff)"><i class="fa-solid fa-circle-up"></i></span>
+      <span class="mi-label">Withdraw</span>
+    </a>
+    <a href="<?= route_url('referrals') ?>" class="more-item <?= $current==='referrals'?'is-active':'' ?>" data-testid="more-referrals">
+      <span class="mi-icon" style="background:rgba(91,240,255,.14);color:var(--cyan,#5bf0ff)"><i class="fa-solid fa-users"></i></span>
+      <span class="mi-label">Referrals</span>
+    </a>
+    <a href="<?= route_url('bonuses') ?>" class="more-item <?= $current==='bonuses'?'is-active':'' ?>" data-testid="more-bonuses">
+      <span class="mi-icon" style="background:rgba(16,185,129,.14);color:#10b981"><i class="fa-solid fa-gift"></i></span>
+      <span class="mi-label">Joining Bonus</span>
+    </a>
+    <a href="<?= route_url('profile') ?>" class="more-item <?= str_starts_with($current,'profile')?'is-active':'' ?>" data-testid="more-profile">
+      <span class="mi-icon" style="background:rgba(255,181,71,.14);color:var(--amber,#ffb547)"><i class="fa-solid fa-user"></i></span>
+      <span class="mi-label">Profile</span>
+    </a>
+    <a href="<?= route_url('profile/password') ?>" class="more-item" data-testid="more-password">
+      <span class="mi-icon" style="background:rgba(255,255,255,.07);color:var(--txt,#fff)"><i class="fa-solid fa-lock"></i></span>
+      <span class="mi-label">Password</span>
+    </a>
+    <a href="<?= route_url('auth/logout') ?>" class="more-item more-item-danger" data-testid="more-logout">
+      <span class="mi-icon" style="background:rgba(255,91,106,.14);color:var(--red,#ff5b6a)"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+      <span class="mi-label">Logout</span>
+    </a>
+  </div>
+</div>
 
 <div class="copy-toast" id="copyToast">Copied to clipboard</div>
 <script src="<?= asset('js/app.js') ?>"></script>
